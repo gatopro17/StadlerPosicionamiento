@@ -13,11 +13,8 @@ module.exports = (sequelize, DataTypes) => {
       minor: {
         type: DataTypes.INTEGER,
         allowNull: false,
-      },
-      intensidad: {
-        type: DataTypes.STRING(145),
-        allowNull: true,
-      },
+      }
+  
     });
   
     // Relaciones

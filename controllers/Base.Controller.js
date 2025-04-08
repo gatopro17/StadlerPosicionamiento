@@ -1,5 +1,3 @@
-// controllers/baseController.js
-
 const createController = (serviceMethod) => async (req, res) => {
     try {
       const data = req.body;
