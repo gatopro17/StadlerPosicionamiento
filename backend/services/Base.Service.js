@@ -1,5 +1,5 @@
 
-
+require("dotenv").config();
 
 const create = async (Model, data) => {
     try {
@@ -31,7 +31,7 @@ const create = async (Model, data) => {
     }
   };
   
-  const update = async (Model, id, data) => {
+  const update = async (Model,id,  data) => {
     try {
       const record = await Model.findByPk(id);
       if (!record) {

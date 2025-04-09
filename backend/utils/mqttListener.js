@@ -1,3 +1,6 @@
+require("dotenv").config();
+console.log('DB User:', process.env.DB_USER);  // Verificar si se carga correctamente
+console.log('DB Password:', process.env.DB_PASSWORD); 
 const mqtt = require('mqtt');
 const client = mqtt.connect('mqtt://localhost');
 const { manejarMensajeTracker } = require('../controllers/Tracker.Controller');

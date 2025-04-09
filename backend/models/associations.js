@@ -11,7 +11,7 @@ Rail.hasMany(TrackerLogs, { foreignKey: 'mayor', as: 'trackerLogs' });
 TrackerLogs.belongsTo(Rail, { foreignKey: 'mayor', as: 'rail' });
 
 module.exports = {
-  sequelize,
+  
   Rail,
   Balizas,
   TrackerLogs,

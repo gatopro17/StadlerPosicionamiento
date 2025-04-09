@@ -12,7 +12,7 @@ const DB_NAME = process.env.DB_NAME;
  *
  * @constant {Sequelize} sequelize - La instancia de Sequelize configurada para la conexión a la base de datos.
  */
-const sequelize = new Sequelize( DB_NAME , DB_USER , DB_PASSWORD, {
+const sequelize = new Sequelize( DB_NAME , DB_USER , DB_PASSWORD , {
   //host: '192.168.10.113',
   host: DB_HOST,
   port: DB_PORT,
@@ -20,5 +20,6 @@ const sequelize = new Sequelize( DB_NAME , DB_USER , DB_PASSWORD, {
   logging: false,
   timezone: "+01:00",
 });
-
+console.log('DB User:', DB_USER);
+console.log('DB Password:', DB_PASSWORD);
 module.exports = sequelize;

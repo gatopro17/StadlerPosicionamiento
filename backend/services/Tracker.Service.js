@@ -1,7 +1,6 @@
-// TrackerService.js
+require("dotenv").config();
 const BaseService = require('./Base.Service');
-const TrackerLogs = require('../models/TrackerLogs');
-const { Rail } = require('../models/Rail'); 
+const { TrackerLogs, Rail } = require('../models/associations');
 
 class TrackerService {
   // Crear Tracker
@@ -30,17 +29,17 @@ class TrackerService {
   }
 
   // ✅ Método personalizado: Actualizar posición desde MQTT
-  async actualizarPosicionDesdeMQTT( posicion) {
+  async actualizarPosicionDesdeMQTT(posicion) {
     console.log("TrackerService: actualizarPosicionDesdeMQTT", posicion);
     try {
       // Insertamos un nuevo log directamente
-      const log = await BaseService.create(TrackerLogs, { 
-        trackerId: posicion.trackerId, 
+      const log = await BaseService.create(TrackerLogs, {
         nombre: posicion.nombre,
         mayor: posicion.mayor,
         minor: posicion.minor,
+        trackerId: posicion.trackerId
       });
-      
+
       console.log(`✔ Log registrado para tracker ${posicion.trackerId}: rail ${posicion.mayor}, posición ${posicion.minor}`);
       return log;
     } catch (error) {
