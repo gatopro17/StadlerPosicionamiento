@@ -1,6 +1,6 @@
 // RailService.js
 const BaseService = require('./Base.Service');
-const { Rail } = require('../models/Rail'); // Asegúrate de importar el modelo Rail
+const { Rail } = require('../models/Rail'); 
 
 class RailService {
   // Crear Rail

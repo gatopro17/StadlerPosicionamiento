@@ -1,4 +1,6 @@
-// BaseService.js
+
+
+
 const create = async (Model, data) => {
     try {
       const newRecord = await Model.create(data);

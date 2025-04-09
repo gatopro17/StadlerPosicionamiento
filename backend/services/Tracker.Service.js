@@ -1,52 +1,50 @@
 // TrackerService.js
 const BaseService = require('./Base.Service');
-const { Tracker } = require('../models/Tracker'); 
-const { Rail } = require('../models/Rail'); // Asegúrate de tener acceso a Rail si es necesario
+const TrackerLogs = require('../models/TrackerLogs');
+const { Rail } = require('../models/Rail'); 
 
 class TrackerService {
   // Crear Tracker
   async create(data) {
-    return await BaseService.create(Tracker, data);
+    return await BaseService.create(TrackerLogs, data);
   }
 
   // Obtener todos los Trackers
   async findAll() {
-    return await BaseService.findAll(Tracker, [{ model: Rail, as: 'rail' }]);
+    return await BaseService.findAll(TrackerLogs, [{ model: Rail, as: 'Rail' }]);
   }
 
   // Obtener Tracker por ID
   async findById(id) {
-    return await BaseService.findById(Tracker, id, [{ model: Rail, as: 'rail' }]);
+    return await BaseService.findById(TrackerLogs, id, [{ model: Rail, as: 'Rail' }]);
   }
 
   // Actualizar Tracker
   async update(id, data) {
-    return await BaseService.update(Tracker, id, data);
+    return await BaseService.update(TrackerLogs, id, data);
   }
 
   // Eliminar Tracker
   async remove(id) {
-    return await BaseService.remove(Tracker, id);
+    return await BaseService.remove(TrackerLogs, id);
   }
 
   // ✅ Método personalizado: Actualizar posición desde MQTT
-  async actualizarPosicionDesdeMQTT(id, posicion) {
+  async actualizarPosicionDesdeMQTT( posicion) {
+    console.log("TrackerService: actualizarPosicionDesdeMQTT", posicion);
     try {
-      const tracker = await Tracker.findByPk(id);
-      if (!tracker) {
-        console.log(`Tracker con ID ${id} no encontrado.`);
-        return null;
-      }
-
-      const updated = await this.update(id, {
+      // Insertamos un nuevo log directamente
+      const log = await BaseService.create(TrackerLogs, { 
+        trackerId: posicion.trackerId, 
+        nombre: posicion.nombre,
         mayor: posicion.mayor,
-        minor: posicion.minor
+        minor: posicion.minor,
       });
-
-      console.log(`✔ Tracker ${id} actualizado a rail ${posicion.mayor}, posición ${posicion.minor}`);
-      return updated;
+      
+      console.log(`✔ Log registrado para tracker ${posicion.trackerId}: rail ${posicion.mayor}, posición ${posicion.minor}`);
+      return log;
     } catch (error) {
-      console.error('❌ Error al actualizar el tracker desde MQTT:', error);
+      console.error('❌ Error al registrar log desde MQTT:', error);
       throw error;
     }
   }

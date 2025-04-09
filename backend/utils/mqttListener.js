@@ -1,6 +1,6 @@
 const mqtt = require('mqtt');
 const client = mqtt.connect('mqtt://localhost');
-const { manejarMensajeTracker } = require('./controllers/tracker.controller');
+const { manejarMensajeTracker } = require('../controllers/Tracker.Controller');
 
 const bufferBalizas = {}; // { trackerId: [baliza1, baliza2, ...] }
 
@@ -16,20 +16,31 @@ client.on('connect', () => {
 });
 
 client.on('message', (topic, message) => {
+  
   try {
-    const baliza = JSON.parse(message.toString());
-    const trackerId = baliza.id;
+    // Convertir el Buffer en una cadena antes de intentar parsearla
+    const mensajeString = message.toString(); // Convertir a string
+    console.log('Mensaje convertido a string:', mensajeString);  // Imprimir para verificar
 
+    // Ahora podemos parsear el mensaje a un objeto JSON
+    const baliza = JSON.parse(mensajeString);
+    // Ahora cada baliza tiene la información completa, incluyendo nombre, mayor, minor, intensidad, trackerId
+    const { id, nombre, mayor, minor, intensidad, trackerId } = baliza;
+
+    if (!trackerId) {
+      throw new Error('El mensaje recibido no contiene un trackerId válido.');
+    }
+    // Comprobamos si ya tenemos un array de balizas para este trackerId
     if (!bufferBalizas[trackerId]) {
       bufferBalizas[trackerId] = [];
     }
 
-    // Añadir la nueva baliza
-    bufferBalizas[trackerId].push(baliza);
+    // Añadimos la nueva baliza al array
+    bufferBalizas[trackerId].push({ id, nombre, mayor, minor, intensidad, trackerId });
 
     // Limitar a las últimas 5 balizas por tracker
     if (bufferBalizas[trackerId].length > 5) {
-      bufferBalizas[trackerId].shift();
+      bufferBalizas[trackerId].shift(); // Elimina la baliza más antigua
     }
 
   } catch (error) {
@@ -37,14 +48,15 @@ client.on('message', (topic, message) => {
   }
 });
 
-// Cada 5 segundos, procesamos las balizas acumuladas
+// 
 setInterval(() => {
   for (const trackerId in bufferBalizas) {
     const balizas = bufferBalizas[trackerId];
-
-    manejarMensajeTracker(JSON.stringify({
-      id: trackerId,
-      balizasCercanas: balizas
-    }));
+ //   console.log(`Procesando balizas para el tracker ${trackerId}:`, balizas);
+    // Pasamos el conjunto de balizas cercanas al controlador para que lo maneje
+    manejarMensajeTracker({
+      trackerId,  // ID del tracker
+      balizasCercanas: balizas  // Las últimas balizas registradas
+    });
   }
-}, 5000);
+}, 60000);  

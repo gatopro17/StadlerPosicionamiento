@@ -1,26 +1,41 @@
 const mqtt = require('mqtt');
-const client = mqtt.connect('mqtt://localhost'); // Conectar al broker MQTT
+const client = mqtt.connect('mqtt://localhost');
 
-// Función para generar datos aleatorios de baliza
-function generarDatosBaliza() {
-  const baliza = {
-    id: Math.floor(Math.random() * 100),
-    mayor: Math.floor(Math.random() * 7) + 1,  // Rail entre 1 y 7
-    minor: Math.floor(Math.random() * 20) + 1,  // Posición entre 1 y 20
-    // Simular una intensidad entre -100 y -30 dBm
-    intensidad: (Math.random() * -70 - 30).toFixed(1)  // entre -30 y -100
+function generarBalizasCercanas() {
+  const railBase = Math.floor(Math.random() * 11) + 1; // Rail entre 1 y 11
+  const balizas = [];
 
-  };
-  return baliza;
+  for (let i = 0; i < 5; i++) {
+    const railOffset = Math.floor(Math.random() * 2); // 0 o 1 => rail base o uno siguiente
+    const rail = railBase + railOffset;
+    const balizaPorRail = Math.floor(Math.random() * 22); // 0 a 21
+    const id = (rail - 1) * 22 + balizaPorRail + 1;
+
+    balizas.push({
+      id,
+      nombre: `Baliza-${id}`, // Nombre de la baliza basado en el ID
+      mayor: rail,
+      minor: balizaPorRail + 1,
+      intensidad: (Math.random() * -70 - 30).toFixed(1), // entre -30 y -100
+    });
+  }
+
+  return balizas;
 }
 
-// Conexión y publicación
+// Enviar cada 5 minutos
 client.on('connect', () => {
   console.log('Conectado al broker MQTT');
+
   setInterval(() => {
-    const datosBaliza = generarDatosBaliza();
-    const topic = `baliza/gps/${datosBaliza.id}`;  // Tópico dinámico con ID de baliza
-    console.log(`Publicando datos en ${topic}: ${JSON.stringify(datosBaliza)}`);
-    client.publish(topic, JSON.stringify(datosBaliza));  // Publica los datos
-  }, 5000); // Publicar cada 5 segundos
+    const trackerId = Math.floor(Math.random() * 5) + 1;
+    const balizas = generarBalizasCercanas();
+
+    balizas.forEach((baliza) => {
+      const topic = `baliza/gps/${trackerId}`;
+      const payload = { ...baliza, trackerId };
+      console.log(`Publicando en ${topic}:`, payload);
+      client.publish(topic, JSON.stringify(payload));
+    });
+  }, 1 * 60 * 1000); // Cada 1 minutos
 });
