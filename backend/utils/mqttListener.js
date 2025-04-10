@@ -4,11 +4,11 @@ const client = mqtt.connect('mqtt://localhost');
 const { manejarMensajeTracker } = require('../controllers/Tracker.Controller');
 
 const bufferBalizas = {}; // { trackerId: [baliza1, baliza2, ...] }
+const ultimaActualizacion = {}; // { trackerId: timestamp }
 
 client.on('connect', () => {
   console.log('Conectado al broker MQTT');
-  client.subscribe('baliza/gps/#', (err) => {
-    if (!err) {
+  client.subscribe('baliza/gps/#', (err) => {    if (!err) {
       console.log('Suscrito a baliza/gps/#');
     } else {
       console.error('Error al suscribirse:', err);
@@ -35,6 +35,7 @@ client.on('message', (topic, message) => {
     if (!bufferBalizas[trackerId]) {
       bufferBalizas[trackerId] = [];
     }
+
     // Verificamos si la baliza ya existe en el buffer
     const existeBaliza = bufferBalizas[trackerId].some(baliza => baliza.id === id);
     if (!existeBaliza) {
@@ -44,12 +45,14 @@ client.on('message', (topic, message) => {
       console.log(`Baliza ${id} ya registrada para el tracker ${trackerId}`);
     }
 
-   
+
     // Limitar las balizas    
     const maxBalizas = 5;
     if (bufferBalizas[trackerId].length > maxBalizas) {
       bufferBalizas[trackerId].shift(); // Elimina la baliza más antigua si excede el límite
     }
+    // Guardar la hora de la última actualización
+    ultimaActualizacion[trackerId] = Date.now();
 
   } catch (error) {
     console.error('Error al procesar mensaje MQTT:', error);
@@ -57,22 +60,22 @@ client.on('message', (topic, message) => {
 });
 
 setInterval(() => {
+  const now = Date.now();
   for (const trackerId in bufferBalizas) {
     const balizas = bufferBalizas[trackerId];
+    const lastUpdated =  ultimaActualizacion[trackerId] || 0;
+    const  hanPasado20s = now - lastUpdated > 20000;
 
-    // Verificamos si tenemos al menos una baliza para procesar
-    if (balizas.length > 0) {
-      // Pasamos el conjunto de balizas cercanas al controlador para que lo maneje
+    if (balizas.length >= 5 || hanPasado20s) {
       manejarMensajeTracker({
-        trackerId,  // ID del tracker
-        balizasCercanas: balizas  // Las últimas balizas registradas
+        trackerId,
+        balizasCercanas: balizas
       });
 
-      // Limpiar el buffer después de procesar las balizas
-      bufferBalizas[trackerId] = [];
-      console.log(`Buffer para tracker ${trackerId} limpiado después de procesar las balizas.`);
+      delete bufferBalizas[trackerId];
+      delete ultimaActualizacion[trackerId];
     } else {
-      console.log(`No hay balizas para procesar en el buffer del tracker ${trackerId}`);
+      console.log(`Procesando balizas en el buffer del tracker ${trackerId}`);
     }
   }
-}, 60000);  // Cada 1 minuto
+}, 20000);  // Cada 20 segundos
