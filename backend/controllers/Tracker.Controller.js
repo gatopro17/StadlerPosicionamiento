@@ -30,7 +30,12 @@ async function manejarMensajeTracker(message) {
 
     // Calculamos la posición del tracker usando las balizas cercanas (ya ordenadas por intensidad)
     const posicion = await encontrarPosicionTracker(balizasCercanas);
-    console.log('📍 Posición encontrada:', posicion);
+     //console.log('📍 Posición encontrada:', posicion);
+
+    // Verificamos si la posición es válida   
+    if (!posicion || typeof posicion !== 'object') {
+      throw new Error('La posición no es válida o no fue encontrada.');
+    }
     // Incluimos el trackerId en el objeto posición
     posicion.trackerId = trackerId;
     // La baliza más cercana es la primera de la lista después de que se haya ordenado

@@ -15,14 +15,15 @@ async function encontrarPosicionTracker(balizasCercanas) {
     // Ordenamos las balizas por intensidad ASC (menor valor = más fuerte)
     const balizasOrdenadas = balizasCercanas.sort((a, b) => parseFloat(a.intensidad) - parseFloat(b.intensidad));
   
-   console.log('Balizas ordenadas por intensidad:', balizasOrdenadas);
+  //console.log('Balizas ordenadas por intensidad:', balizasOrdenadas);
       return {
         id: balizasOrdenadas[0].id,
         nombre: balizasOrdenadas[0].nombre, 
         mayor: balizasOrdenadas[0].mayor,
         minor: balizasOrdenadas[0].minor,
         trackerId: balizasOrdenadas[0].trackerId
-      };
+      }
+        
     
   
   
