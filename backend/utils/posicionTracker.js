@@ -18,8 +18,8 @@ async function encontrarPosicionTracker(balizasCercanas) {
    
       return {
         nombre: balizasOrdenadas[0].nombre, 
-        mayor: balizasOrdenadas[0].mayor,
-        minor: balizasOrdenadas[0].minor,
+        rail: balizasOrdenadas[0].mayor,
+        posición: balizasOrdenadas[0].minor,
         trackerId: balizasOrdenadas[0].trackerId
       };
     

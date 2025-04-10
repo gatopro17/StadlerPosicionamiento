@@ -1,4 +1,4 @@
-const sequelize = require('../config/database');
+// Este archivo se encarga de definir las asociaciones entre los modelos de Sequelize
 const Rail = require('./Rail');
 const Balizas = require('./Balizas');
 const TrackerLogs = require('./TrackerLogs');

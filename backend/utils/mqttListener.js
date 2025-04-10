@@ -1,4 +1,5 @@
-require("dotenv").config();
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
+
 console.log('DB User:', process.env.DB_USER);  // Verificar si se carga correctamente
 console.log('DB Password:', process.env.DB_PASSWORD); 
 const mqtt = require('mqtt');
