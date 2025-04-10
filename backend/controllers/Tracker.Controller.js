@@ -23,7 +23,7 @@ async function manejarMensajeTracker(message) {
     const trackerData = message;
    
     const {  trackerId, balizasCercanas } = trackerData;
-   //console.log('Balizas cercanas:', balizasCercanas);
+
    if (!trackerId) {
     throw new Error('El trackerId no está definido en el mensaje.');
   }

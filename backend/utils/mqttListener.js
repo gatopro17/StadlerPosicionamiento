@@ -1,7 +1,4 @@
 require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
-
-console.log('DB User:', process.env.DB_USER);  // Verificar si se carga correctamente
-console.log('DB Password:', process.env.DB_PASSWORD); 
 const mqtt = require('mqtt');
 const client = mqtt.connect('mqtt://localhost');
 const { manejarMensajeTracker } = require('../controllers/Tracker.Controller');
@@ -24,7 +21,7 @@ client.on('message', (topic, message) => {
   try {
     // Convertir el Buffer en una cadena antes de intentar parsearla
     const mensajeString = message.toString(); // Convertir a string
-    console.log('Mensaje convertido a string:', mensajeString);  // Imprimir para verificar
+    console.log('Mensaje recibido', mensajeString);  // Imprimir para verificar
 
     // Ahora podemos parsear el mensaje a un objeto JSON
     const baliza = JSON.parse(mensajeString);

@@ -20,6 +20,5 @@ const sequelize = new Sequelize( DB_NAME , DB_USER , DB_PASSWORD , {
   logging: false,
   timezone: "+01:00",
 });
-console.log('DB User:', DB_USER);
-console.log('DB Password:', DB_PASSWORD);
+
 module.exports = sequelize;
