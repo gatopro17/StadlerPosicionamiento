@@ -28,7 +28,19 @@ class TrackerService {
     return await BaseService.remove(TrackerLogs, id);
   }
 
-  // ✅ Método personalizado: Actualizar posición desde MQTT
+    /**
+   * Método personalizado para actualizar la posición del tracker desde un mensaje MQTT.
+   * 
+   * Este método crea un nuevo log de TrackerLogs a partir de los datos de la posición recibida.
+   * 
+   * @param {Object} posicion - Un objeto que contiene los detalles de la posición del tracker.
+   * @param {string} posicion.nombre - El nombre de la baliza o posición.
+   * @param {number} posicion.mayor - El valor mayor de la baliza (referente al rail).
+   * @param {number} posicion.minor - El valor menor de la baliza (referente a la posición en el rail).
+   * @param {number} posicion.trackerId - El ID del tracker asociado a esta posición.
+   * @returns {Promise<Object>} El nuevo log de TrackerLogs creado.
+   * @throws {Error} Si ocurre un error durante el registro del log.
+   */
   async actualizarPosicionDesdeMQTT(posicion) {
     console.log("TrackerService: actualizarPosicionDesdeMQTT", posicion);
     try {

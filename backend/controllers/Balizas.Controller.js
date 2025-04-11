@@ -1,3 +1,7 @@
+/**
+ * Controlador para las operaciones CRUD del modelo Baliza.
+ * Utiliza funciones base genéricas enlazadas al servicio de balizas.
+ */
 const { createController, findAllController, findByIdController, updateController, deleteController } = require('./Base.Controller');
 const balizaService = require('../services/Balizas.Service');
 

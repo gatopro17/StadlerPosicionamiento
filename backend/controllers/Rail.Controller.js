@@ -1,3 +1,7 @@
+/**
+ * Controladores para el modelo Rail, utilizando controladores base reutilizables.
+ * Cada función usa un método del servicio correspondiente para realizar operaciones CRUD.
+ */
 const { createController, findAllController, findByIdController, updateController, deleteController } = require('./Base.Controller');
 const railService = require('../services/Rail.Service');
 

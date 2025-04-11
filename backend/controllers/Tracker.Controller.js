@@ -17,7 +17,18 @@ const findById = findByIdController(TrackerService.findById);
 const update = updateController(TrackerService.update);
 const remove = deleteController(TrackerService.remove);
 
-// --- Función personalizada para manejar datos desde MQTT ---
+/**
+ * Procesa un mensaje MQTT recibido con información de un tracker.
+ * Calcula la posición basada en las balizas cercanas, determina la más próxima
+ * y actualiza la posición del tracker en la base de datos.
+ *
+ * @async
+ * @function
+ * @param {Object} message - Objeto con los datos del tracker recibido por MQTT.
+ * @param {string|number} message.trackerId - Identificador único del tracker.
+ * @param {Array<Object>} message.balizasCercanas - Lista de balizas cercanas con campos `mayor`, `minor`, e `intensidad`.
+ * @returns {Promise<Object|void>} Retorna la posición calculada si todo es exitoso, o `undefined` si hay error.
+ */
 async function manejarMensajeTracker(message) {
   try {
     const trackerData = message;

@@ -1,7 +1,11 @@
 // BalizaService.js
 const BaseService = require('./Base.Service');
-const { Balizas } = require('../models/Balizas'); // Asegúrate de importar el modelo Balizas
+const { Balizas } = require('../models/Balizas');
 
+/**
+ * Servicio que maneja las operaciones CRUD para las balizas.
+ * Utiliza el servicio base para realizar las operaciones comunes sobre el modelo Balizas.
+ */
 class BalizasService {
   // Crear Baliza
   async create(data) {
