@@ -4,7 +4,7 @@ USE stadler;
 CREATE TABLE IF NOT EXISTS trackerTransbordador (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
-    tipo ENUM('grande', 'pequeño') NOT NULL
+    tipo ENUM('grande', 'mediano', 'pequeño') NOT NULL
 );
 
 -- Tabla de balizas en transbordadores
