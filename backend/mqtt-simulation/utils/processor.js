@@ -16,6 +16,16 @@ function areCoupled(trackerA, trackerB) {
   const rssiDifference = Math.abs(trackerA.rssi - trackerB.rssi);
   const timestampDifference = Math.abs(trackerA.timestamp - trackerB.timestamp);
 
+  const validCoupling = {
+    1: [3],
+    2: [ 3],
+    3: [1, 2],
+  }
+
+
+  const isValidCoupling = validCoupling[trackerA.trackerID]?.includes(trackerB.trackerID);
+  if (!isValidCoupling) return false;
+  
   console.log(`Comparing Tracker ${trackerA.trackerID} with Tracker ${trackerB.trackerID} - RSSI Difference: ${rssiDifference}, Timestamp Difference: ${timestampDifference}ms`);
 
   return (
