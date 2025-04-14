@@ -34,10 +34,7 @@ TrackerLogs.belongsTo(Rail, { foreignKey: 'mayor', as: 'rail' });
 TrackerTransbordador.hasMany(BalizasTransbordador, { foreignKey: 'trackerId', as: 'balizas' });
 BalizasTransbordador.belongsTo(TrackerTransbordador, { foreignKey: 'trackerId', as: 'tracker' });
 
-// Relación Rail -> BalizasCabeceras (1:N)
-const Rail = require('./Rail');
-Rail.hasMany(BalizasCabeceras, { foreignKey: 'railId', as: 'cabeceras' });
-BalizasCabeceras.belongsTo(Rail, { foreignKey: 'railId', as: 'rail' });
+
 module.exports = {
   
   Rail,
@@ -46,6 +43,5 @@ module.exports = {
   TrackerTransbordador,
   BalizasTransbordador,
   TrackerActivos,
-  BalizasCabeceras,
   Agujas
 };

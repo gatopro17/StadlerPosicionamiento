@@ -22,13 +22,7 @@ CREATE TABLE IF NOT EXISTS trackerActivos (
     nombre VARCHAR(100) NOT NULL
 );
 
--- Tabla de balizas en cabeceras, asociadas a rail
-CREATE TABLE IF NOT EXISTS balizasCabeceras (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    railId INT NOT NULL,
-    FOREIGN KEY (railId) REFERENCES rail(id)
-);
+
 
 -- Tabla de agujas
 CREATE TABLE IF NOT EXISTS agujas (
