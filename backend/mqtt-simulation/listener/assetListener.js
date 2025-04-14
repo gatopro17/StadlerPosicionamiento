@@ -9,6 +9,14 @@ client.on('connect', () => {
 
 client.on('message', (topic, message) => {
   const data = JSON.parse(message.toString());
-  console.log(`[ASSET] ID: ${data.trackerID}, From: ${data.beaconId || `Rail ${data.rail}`}, RSSI: ${data.rssi}`);
+
+  const source = data.beaconId
+    ? `From Beacon ${data.beaconId}`
+    : data.rail !== undefined
+      ? `From Rail ${data.rail}`
+      : 'Unknown source';
+
+  console.log(`[ASSET] ID: ${data.trackerID}, ${source}, RSSI: ${data.rssi}`);
+
   processor.processMessage(data, 'asset');
 });
