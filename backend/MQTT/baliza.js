@@ -56,5 +56,5 @@ client.on('connect', () => {
     });
 
     console.log(`🔁 Enviadas ${cantidadBalizas} balizas para tracker ${trackerId}`);
-  }, 15 * 1000); // Cada 15 segundos
+  }, 60 * 1000); // Cada x segundos
 });
