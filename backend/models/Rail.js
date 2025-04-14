@@ -1,7 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Balizas = require('./Balizas'); 
-const TrackerLogs = require('./TrackerLogs'); 
+
 
 // Definición del modelo Rail
 const Rail = sequelize.define('Rail', {
