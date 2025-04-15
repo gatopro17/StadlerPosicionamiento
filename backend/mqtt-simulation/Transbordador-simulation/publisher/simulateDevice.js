@@ -1,20 +1,24 @@
+// Importa la función de conexión MQTT desde un archivo utilitario
 const connectMQTT = require('../utils/mqttClient');
+// Importa una función para generar una intensidad de señal aleatoria
 const getRandomIntensity = require('../utils/randomIntensity');
+// Importa las funciones para generar balizas específicas para los trackers
 const { generateCabeceraBeacon, generateTransbordadorBeacon } = require('../utils/balizaHelper');
 
-// Conexión MQTT (solo una vez)
+// Establece la conexión con el servidor MQTT utilizando la función `connectMQTT`
 const client = connectMQTT();
-
+// Función para crear el payload (mensaje) que se enviará por MQTT
+// Toma un tracker, beacon, rail y position y genera un mensaje con los datos relevantes
 const createTrackerPayload = (tracker, beacon, rail, position) => ({
-  trackerID: `${tracker.prefix}-${tracker.id}`,
-  trackerName: tracker.nombre,
-  beaconId: beacon.id,
-  rail: rail,
-  position: position,
-  rssi: getRandomIntensity()
+  trackerID: `${tracker.prefix}-${tracker.id}`,  // ID único del tracker
+  trackerName: tracker.nombre,                   // Nombre del tracker
+  beaconId: beacon.id,                       // ID de la baliza
+  rail: rail,                           // El rail en el que se encuentra el tracker
+  position: position,               // La posición dentro del rail
+  rssi: getRandomIntensity()     // Intensidad de la señal (RSSI), generada aleatoriamente
 });
 
-// Configuración de los trackers
+// Configuración de los trackers (activos y transbordadores)
 const trackers = [
   {
     id: 2,
@@ -22,6 +26,7 @@ const trackers = [
     prefix: "A",
     interval: 7000,
     generateBeacon: () => {
+      // Genera un rail y una posición aleatoria para el activo
       const rail = Math.floor(Math.random() * 7) + 1;
       const position = Math.floor(Math.random() * 22) + 1;
       return {
@@ -32,8 +37,9 @@ const trackers = [
         position
       };
     },
-    topic: 'position/asset'
+    topic: 'position/asset'  // Tema MQTT en el que se publicarán los datos de este tracker
   },
+  
   {
     id: 1,
     nombre: "Activo 1",
@@ -67,20 +73,20 @@ const trackers = [
     topic: 'position/tracker'
   }
 ];
-
+// Evento cuando se establece la conexión con el broker MQTT
 client.on('connect', () => {
   console.log('Connected to MQTT Broker');
 
-  // Publicar payload para cada tracker
+  // Para cada tracker, se ejecuta un intervalo para publicar los datos
   trackers.forEach(tracker => {
     setInterval(() => {
       const beacons = tracker.generateBeacon();
-      const beaconArray = Array.isArray(beacons) ? beacons : [beacons];
+      const beaconArray = Array.isArray(beacons) ? beacons : [beacons];   // Asegura que las balizas sean un array
 
       beaconArray.forEach(beacon => {
         const payload = createTrackerPayload(tracker, beacon, beacon.mayor, beacon.minor);
 
-        // Si es "Activo 1" simulado como montado en transbordador, no debe tener rail
+               // Si el tracker es "Activo 1", simulado como montado en transbordador, no se incluye el rail en el payload
         if (tracker.id === 1 && tracker.prefix === 'A') {
           delete payload.rail;
         }
