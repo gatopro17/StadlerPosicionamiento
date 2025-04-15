@@ -17,11 +17,10 @@ function areCoupled(trackerA, trackerB) {
   const timestampDifference = Math.abs(trackerA.timestamp - trackerB.timestamp);
 
   const validCoupling = {
-    1: [3],
-    2: [ 3],
-    3: [1, 2],
-  }
-
+    'T-1': ['T-3'],
+    'T-2': ['T-3'],
+    'T-3': ['T-1', 'T-2'],
+  };
 
   const isValidCoupling = validCoupling[trackerA.trackerID]?.includes(trackerB.trackerID);
   if (!isValidCoupling) return false;

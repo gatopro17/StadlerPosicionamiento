@@ -7,12 +7,18 @@ function printStatus() {
 
   Object.entries(statuses).forEach(([trackerID, status]) => {
     const trackerDetails = state.getBuffer(trackerID)?.[0];
-
     if (!trackerDetails) return;
 
     const { trackerName, rail, rssi, beaconId, position } = trackerDetails;
 
     let location = 'Unknown';
+
+    // Si ya hay un mensaje de estado (como acoplamiento), lo imprimimos directamente
+    const isCoupled = status.includes('coupled with');
+    if (isCoupled) {
+      console.log(`🧲 ${status}`);
+      return;
+    }
 
     // Si es un activo (A-2), mostramos rail y posición
     if (trackerID.startsWith('A-') && rail !== undefined && position !== undefined) {
@@ -20,9 +26,7 @@ function printStatus() {
     } else if (rail !== undefined) {
       location = `Rail ${rail}`;
     } else if (beaconId) {
-      // Determinar tipo de transbordador según prefijo del beaconId
       const prefix = beaconId.charAt(0).toUpperCase();
-
       switch (prefix) {
         case 'G':
           location = 'Transbordador Grande';
