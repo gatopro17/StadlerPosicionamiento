@@ -78,4 +78,6 @@ function inferTrackLocation(signalMap, switchStates, lastSwitchPassed) {
   }
   
   module.exports = { inferTrackLocation };
+
+  
   
