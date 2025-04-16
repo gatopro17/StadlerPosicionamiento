@@ -12,7 +12,6 @@ const TrackerLogs = require('./TrackerLogs');
 const TrackerTransbordador = require('./TrackerTransbordador');
 const BalizasTransbordador = require('./BalizasTransbordador');
 const TrackerActivos = require('./TrackerActivos');
-const BalizasCabeceras = require('./BalizasCabeceras');
 const Agujas = require('./Agujas');
 
 // Asociaciones entre Rail y Balizas
