@@ -14,7 +14,7 @@ function inferTrackLocation(signalMap, switchStates, lastSwitchPassed) {
       1: { target: 8, next: 2, candidates: [8, 9] }, // Aguja 1: desvío a 8, luego pasa a aguja 2
       2: { target: 9, next: 3, candidates: [8, 9, 10] }, // Aguja 2: desvío a 9, luego pasa a aguja 3
       3: { target: 10, next: 4, candidates: [9, 10, 11] },  // Aguja 3: desvío a 10, luego pasa a aguja 4
-      4: { target: [11, 12],  candidates: [10, 11, 12] }, // Aguja 4: desvíos a 11 o 12, 
+      4: { target: [11, 12], next: 5, candidates: [10, 11, 12] }, // Aguja 4: desvíos a 11 o 12, 
       5: { target: [13, 14], next: null, candidates: [13, 14] } // Aguja 5: desvíos a 13 o 14, no hay siguiente
     };
   
