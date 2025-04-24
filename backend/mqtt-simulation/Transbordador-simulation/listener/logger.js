@@ -1,3 +1,5 @@
+require('dotenv').config({ path: require('path').resolve(__dirname, '../../../.env') });
+
 // Importa la función que gestiona la conexión MQTT desde un archivo utilitario
 const connectMQTT = require('../utils/mqttClient');
 

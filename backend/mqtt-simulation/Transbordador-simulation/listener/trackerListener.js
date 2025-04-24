@@ -1,8 +1,13 @@
+require('dotenv').config({ path: require('path').resolve(__dirname, '../../../.env') });
+
 // Importa la función que gestiona la conexión MQTT desde un archivo utilitario
 const connectMQTT = require('../utils/mqttClient');
 
 // Importa el módulo `processor` que procesará los mensajes recibidos
 const processor = require('../utils/processor');
+
+// Importa el módulo `logHandlers` que maneja los logs de posición de tracker y acoplamiento
+const { handleTrackerPositionLog } = require('../utils/logHandlers');
 
 // Establece la conexión con el servidor MQTT utilizando la función `connectMQTT`
 const client = connectMQTT();
@@ -18,6 +23,7 @@ client.on('connect', () => {
 
 // Evento que se ejecuta cuando se recibe un mensaje en el tema suscrito
 client.on('message', (topic, message) => {
+  try{
   // Convierte el mensaje recibido (buffer) en un objeto JSON
   const data = JSON.parse(message.toString());
 
@@ -26,4 +32,11 @@ client.on('message', (topic, message) => {
 
   // Procesa el mensaje del tracker utilizando el módulo `processor` para manejar los datos
   processor.processMessage(data, 'tracker');
+
+  handleTrackerPositionLog(data);
+   
+  console.log('[TrackerListener] Log de posición registrado para tracker:', data.trackerID);
+}catch (err) {
+  console.error('[TrackerListener] Error procesando mensaje:', err.message);
+}
 });

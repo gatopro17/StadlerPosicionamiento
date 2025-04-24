@@ -9,10 +9,17 @@ const { generateCabeceraBeacon, generateTransbordadorBeacon } = require('../util
 const client = connectMQTT();
 // Función para crear el payload (mensaje) que se enviará por MQTT
 // Toma un tracker, beacon, rail y position y genera un mensaje con los datos relevantes
+const getRandomOtherTrackerID = (currentTrackerID) => {
+  const otherTrackers = trackers
+    .filter(t => `${t.prefix}-${t.id}` !== currentTrackerID && t.prefix === 'T'); // Solo transbordadores
+  const random = otherTrackers[Math.floor(Math.random() * otherTrackers.length)];
+  return `${random.prefix}-${random.id}`;
+};
+
 const createTrackerPayload = (tracker, beacon, rail, position) => ({
   trackerID: `${tracker.prefix}-${tracker.id}`,  // ID único del tracker
   trackerName: tracker.nombre,                   // Nombre del tracker
-  beaconId: beacon.id,                       // ID de la baliza
+  beaconId: getRandomOtherTrackerID(tracker.id),                       // ID de la baliza
   rail: rail,                           // El rail en el que se encuentra el tracker
   position: position,               // La posición dentro del rail
   rssi: getRandomIntensity()     // Intensidad de la señal (RSSI), generada aleatoriamente

@@ -1,0 +1,3 @@
+PS C:\Users\imhernandez\Documents\Github\ProyectoStadler\stadlerPos\backend> npm start
+PS C:\Users\imhernandez\Documents\Github\ProyectoStadler\stadlerPos\backend\MQTT> node baliza
+PS C:\Users\imhernandez\Documents\Github\ProyectoStadler\stadlerPos\backend\utils> node mqttListener
