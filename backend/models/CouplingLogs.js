@@ -1,8 +1,8 @@
-// models/CouplingLog.js
+// models/CouplingLogs.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-    const CouplingLog = sequelize.define('CouplingLog', {
+    const CouplingLogs = sequelize.define('CouplingLogs', {
       id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -35,5 +35,5 @@ const sequelize = require('../config/database');
       timestamps: false
     });
   
-    module.exports = CouplingLog;
+    module.exports = CouplingLogs;
   

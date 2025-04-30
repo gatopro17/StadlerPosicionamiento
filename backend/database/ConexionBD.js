@@ -25,6 +25,7 @@ const conexionBD = (sequelize, app, port) => {
     .catch(err => {
       console.error('❌ Error al conectar o sincronizar la base de datos:', err);
     });
+    
 };
 
 module.exports = conexionBD;

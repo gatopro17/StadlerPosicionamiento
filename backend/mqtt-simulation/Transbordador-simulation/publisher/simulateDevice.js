@@ -31,7 +31,7 @@ const trackers = [
     id: 2,
     nombre: "Activo A2",
     prefix: "A",
-    interval: 7000,
+    interval: 70000,
     generateBeacon: () => {
       // Genera un rail y una posición aleatoria para el activo
       const rail = Math.floor(Math.random() * 7) + 1;
@@ -51,7 +51,7 @@ const trackers = [
     id: 1,
     nombre: "Activo 1",
     prefix: "A",
-    interval: 5000,
+    interval: 60000,
     generateBeacon: () => generateTransbordadorBeacon(1),
     topic: 'position/asset'
   },
@@ -59,7 +59,7 @@ const trackers = [
     id: 3,
     nombre: "Transbordador Pequeño",
     prefix: "T",
-    interval: 4000,
+    interval: 50000,
     generateBeacon: () => generateCabeceraBeacon(Math.floor(Math.random() * 7) + 1),
     topic: 'position/tracker'
   },
@@ -67,7 +67,7 @@ const trackers = [
     id: 2,
     nombre: "Transbordador Mediano",
     prefix: "T",
-    interval: 6000,
+    interval: 70000,
     generateBeacon: () => generateCabeceraBeacon(Math.floor(Math.random() * 7) + 1),
     topic: 'position/tracker'
   },
@@ -75,7 +75,7 @@ const trackers = [
     id: 1,
     nombre: "Transbordador Grande",
     prefix: "T",
-    interval: 5000,
+    interval: 60000,
     generateBeacon: () => [1, 2, 3].map(rail => generateCabeceraBeacon(rail)),
     topic: 'position/tracker'
   }

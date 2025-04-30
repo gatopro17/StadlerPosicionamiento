@@ -10,11 +10,10 @@ const message = {
   trackerId: 'T-V9',
   lastSwitchPassed: 2,
   switchStates: {
-    1: 8,        // Desvío a vía 8
-    2: 9,        // Desvío a vía 9
-    3: 'continue',  // Continua
-    4: 11,       // Otras agujas
-    5: 13,
+    1: 'continue',    
+    2: 9,             
+    3: 'continue',    
+    4: 11,            
   },
   signalMap: {
     8: -85,      // Señal para vía 8

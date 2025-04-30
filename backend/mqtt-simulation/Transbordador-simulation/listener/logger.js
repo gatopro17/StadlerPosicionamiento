@@ -29,9 +29,9 @@ client.on('message', (topic, message) => {
   // Verifica si el mensaje proviene de un tracker o un activo y lo procesa de acuerdo con ello
   if (topic.includes('tracker')) {
     // Si el tema contiene la palabra "tracker", procesa el mensaje como un tracker
-    processor.processMessage(data, 'tracker');
+    // processor.processMessage(data, 'tracker');
   } else if (topic.includes('asset')) {
     // Si el tema contiene la palabra "asset", procesa el mensaje como un activo
-    processor.processMessage(data, 'asset');
+    // processor.processMessage(data, 'asset');
   }
 });

@@ -10,10 +10,10 @@ const message = {
   trackerId: 'T-V12',
   lastSwitchPassed: 4, // Último desvío pasado por el tracker
   switchStates: {
-    1: 8,         // Desvío a vía 8
+    1: 'continue',         // Desvío a vía 8
     2: 'continue', // Continúa
     3: 'continue', // Continúa
-    4: 12       // Desvío a vía 12
+    4: 11       // Desvío a vía 12
 
   },
   signalMap: {
