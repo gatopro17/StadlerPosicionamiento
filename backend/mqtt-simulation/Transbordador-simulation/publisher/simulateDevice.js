@@ -8,7 +8,7 @@ const { generateCabeceraBeacon, generateTransbordadorBeacon } = require('../util
 // Establece la conexión con el servidor MQTT utilizando la función `connectMQTT`
 const client = connectMQTT();
 // Función para crear el payload (mensaje) que se enviará por MQTT
-// Toma un tracker, beacon, rail y position y genera un mensaje con los datos relevantes
+// Toma un tracker, beacon, rails y position y genera un mensaje con los datos relevantes
 const getRandomOtherTrackerID = (currentTrackerID) => {
   const otherTrackers = trackers
     .filter(t => `${t.prefix}-${t.id}` !== currentTrackerID && t.prefix === 'T'); // Solo transbordadores
@@ -16,12 +16,12 @@ const getRandomOtherTrackerID = (currentTrackerID) => {
   return `${random.prefix}-${random.id}`;
 };
 
-const createTrackerPayload = (tracker, beacon, rail, position) => ({
+const createTrackerPayload = (tracker, beacon, rails, position) => ({
   trackerID: `${tracker.prefix}-${tracker.id}`,  // ID único del tracker
   trackerName: tracker.nombre,                   // Nombre del tracker
   beaconId: getRandomOtherTrackerID(tracker.id),                       // ID de la baliza
-  rail: rail,                           // El rail en el que se encuentra el tracker
-  position: position,               // La posición dentro del rail
+  rails: rails,                           // El rails en el que se encuentra el tracker
+  position: position,               // La posición dentro del rails
   rssi: getRandomIntensity()     // Intensidad de la señal (RSSI), generada aleatoriamente
 });
 
@@ -33,14 +33,14 @@ const trackers = [
     prefix: "A",
     interval: 70000,
     generateBeacon: () => {
-      // Genera un rail y una posición aleatoria para el activo
-      const rail = Math.floor(Math.random() * 7) + 1;
+      // Genera un rails y una posición aleatoria para el activo
+      const rails = Math.floor(Math.random() * 7) + 1;
       const position = Math.floor(Math.random() * 22) + 1;
       return {
-        id: `R${rail}-P${position}`,  // opcional, por trazabilidad
-        mayor: rail,
+        id: `R${rails}-P${position}`,  // opcional, por trazabilidad
+        mayor: rails,
         minor: position,
-        rail,
+        rails,
         position
       };
     },
@@ -76,7 +76,7 @@ const trackers = [
     nombre: "Transbordador Grande",
     prefix: "T",
     interval: 60000,
-    generateBeacon: () => [1, 2, 3].map(rail => generateCabeceraBeacon(rail)),
+    generateBeacon: () => [1, 2, 3].map(rails => generateCabeceraBeacon(rails)),
     topic: 'position/tracker'
   }
 ];
@@ -93,9 +93,9 @@ client.on('connect', () => {
       beaconArray.forEach(beacon => {
         const payload = createTrackerPayload(tracker, beacon, beacon.mayor, beacon.minor);
 
-               // Si el tracker es "Activo 1", simulado como montado en transbordador, no se incluye el rail en el payload
+               // Si el tracker es "Activo 1", simulado como montado en transbordador, no se incluye el rails en el payload
         if (tracker.id === 1 && tracker.prefix === 'A') {
-          delete payload.rail;
+          delete payload.rails;
         }
 
         client.publish(tracker.topic, JSON.stringify(payload));

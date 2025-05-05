@@ -28,7 +28,7 @@ client.on('message', (topic, message) => {
   const data = JSON.parse(message.toString());
 
   // Muestra en la consola el ID del tracker, su nombre, riel y la intensidad de la señal RSSI
-  console.log(`[TRACKER] ID: ${data.trackerID}, Name: ${data.trackerName}, Rail: ${data.rail}, RSSI: ${data.rssi}`);
+  console.log(`[TRACKER] ID: ${data.trackerID}, Name: ${data.trackerName}, Rails: ${data.rails}, RSSI: ${data.rssi}`);
 
   // Procesa el mensaje del tracker utilizando el módulo `processor` para manejar los datos
   processor.processMessage(data, 'tracker');

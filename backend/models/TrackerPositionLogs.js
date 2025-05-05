@@ -14,7 +14,7 @@ const TrackerPositionLogs = sequelize.define('TrackerPositionLogs', {
     type: DataTypes.STRING(100),
     allowNull: true,
   },
-  rail: {
+  rails: {
     type: DataTypes.STRING(50),
     allowNull: true,
   },

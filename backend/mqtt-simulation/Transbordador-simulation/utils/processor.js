@@ -58,12 +58,12 @@ function checkCoupling(trackerID, data) {
     const isValidRSSI = data.rssi > -COUPLING_RSSI_THRESHOLD;
     const isRecent = timeDiff < COUPLING_TIMESTAMP_THRESHOLD;
     if (isValidRSSI && isRecent) {
-        const message = `🚦 Acoplamiento Detectado: Transbordador grande ${data.trackerName} (ID: ${trackerID}) ha detectado al pequeño ${beaconID} en Rail ${data.rail}`;
+        const message = `🚦 Acoplamiento Detectado: Transbordador grande ${data.trackerName} (ID: ${trackerID}) ha detectado al pequeño ${beaconID} en Rails ${data.rails}`;
         console.log(message);
         datos= {
             tracker1Id: trackerID,
             tracker2Id: beaconID,
-            rail: data.rail,
+            rails: data.rails,
             rssiDifference: data.rssi,
             timestampDiffMs: timeDiff
         };
@@ -99,8 +99,8 @@ function getAssetStatus(trackerID, data, strongest) {
     if (data.beaconType === 'internal') {
         return `Asset ${trackerID} is mounted on Transbordador ${data.beaconId}`;
     } else {
-        // Si el activo no tiene beacon interno, muestra el rail en el que se encuentra.
-        return `Asset ${trackerID} is on Rail ${strongest.rail}`;
+        // Si el activo no tiene beacon interno, muestra el rails en el que se encuentra.
+        return `Asset ${trackerID} is on Rails ${strongest.rails}`;
     }
 }
 

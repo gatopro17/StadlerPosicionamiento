@@ -14,7 +14,7 @@ const CouplingLogs = sequelize.define('CouplingLogs', {
     type: DataTypes.STRING(50),
     allowNull: true,
   },
-  rail: {
+  rails: {
     type: DataTypes.STRING(50),
     allowNull: true,
   },

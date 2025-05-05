@@ -17,7 +17,7 @@ function printStatus() {
     if (!trackerDetails) return; // Si no se encuentran detalles del tracker, salta esta iteración.
 
     // Desestructura los detalles del tracker.
-    const { trackerName, rail, rssi, beaconId, position } = trackerDetails;
+    const { trackerName, rails, rssi, beaconId, position } = trackerDetails;
 
     let location = 'Unknown'; // Inicializa la ubicación del tracker como 'Desconocida'.
 
@@ -29,14 +29,14 @@ function printStatus() {
       return;
     }
 
-    // Si el tracker es un activo (por ejemplo, A-2), muestra la ubicación en el rail y la posición.
-    if (trackerID.startsWith('A-') && rail !== undefined && position !== undefined) {
-      location = `Rail ${rail} in position ${position}`;
-    } else if (rail !== undefined) {
-      // Si el rail está definido pero no la posición, solo muestra el rail.
-      location = `Rail ${rail}`;
+    // Si el tracker es un activo (por ejemplo, A-2), muestra la ubicación en el rails y la posición.
+    if (trackerID.startsWith('A-') && rails !== undefined && position !== undefined) {
+      location = `Rails ${rails} in position ${position}`;
+    } else if (rails !== undefined) {
+      // Si el rails está definido pero no la posición, solo muestra el rails.
+      location = `Rails ${rails}`;
     } else if (beaconId) {
-      // Si no hay rail definido, pero hay un beaconId, determina la ubicación del tracker según el prefijo del beaconId.
+      // Si no hay rails definido, pero hay un beaconId, determina la ubicación del tracker según el prefijo del beaconId.
       const prefix = beaconId.charAt(0).toUpperCase(); // Obtiene el primer carácter del beaconId y lo convierte a mayúsculas.
       switch (prefix) {
         case 'G': // Si el beaconId comienza con 'G', es un transbordador grande.

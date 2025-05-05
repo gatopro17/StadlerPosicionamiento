@@ -10,13 +10,13 @@ async function handleTrackerPositionLog(data) {
     const trackerId = data.trackerId || data.trackerID;
     const {
       trackerName,
-      rail,
+      rails,
       position,
       beaconId,
       rssi
     } = data;
   
-    if (!trackerId || rail === undefined || position === undefined) {
+    if (!trackerId || rails === undefined || position === undefined) {
       console.warn('Datos incompletos para log de posición de tracker:', data);
       return;
     }
@@ -24,7 +24,7 @@ async function handleTrackerPositionLog(data) {
     await TrackerPositionLogsService.create({
       trackerId,
       trackerName: trackerName || null,
-      rail,
+      rails,
       position,
       beaconId: beaconId || null,
       rssi: rssi || null
@@ -37,9 +37,9 @@ async function handleTrackerPositionLog(data) {
  * @param {Object} data - Datos del mensaje MQTT.
  */
 async function handleCouplingLog(data) {
-  const { tracker1Id, tracker2Id, rail, rssiDifference, timestampDiffMs } = data;
+  const { tracker1Id, tracker2Id, rails, rssiDifference, timestampDiffMs } = data;
 
-  if (!tracker1Id || !tracker2Id || rail === undefined) {
+  if (!tracker1Id || !tracker2Id || rails === undefined) {
     console.warn('Datos incompletos para log de acoplamiento:', data);
     return;
   }
@@ -47,7 +47,7 @@ async function handleCouplingLog(data) {
   await CouplingLogsService.create({
     tracker1Id,
     tracker2Id,
-    rail,
+    rails,
     rssiDifference: rssiDifference || null,
     timestampDiffMs: timestampDiffMs || null
   });

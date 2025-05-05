@@ -17,12 +17,12 @@ client.on('connect', () => {
 client.on('message', (topic, message) => {
     // Convierte el mensaje recibido (buffer) en un objeto JSON
   const data = JSON.parse(message.toString());
- // Determina la fuente del mensaje, ya sea un beacon o un rail (vía)
+ // Determina la fuente del mensaje, ya sea un beacon o un rails (vía)
   const source = data.beaconId
     ? `From Beacon ${data.beaconId}` // Si el mensaje tiene un beaconId, la fuente es una baliza
-    : data.rail !== undefined        // Si el mensaje tiene un número de rail (vía), la fuente es un rail
-      ? `From Rail ${data.rail}`   // Si tiene rail, lo muestra
-      : 'Unknown source';   // Si no hay beaconId ni rail, la fuente es desconocida
+    : data.rails !== undefined        // Si el mensaje tiene un número de rails (vía), la fuente es un rails
+      ? `From Rails ${data.rails}`   // Si tiene rails, lo muestra
+      : 'Unknown source';   // Si no hay beaconId ni rails, la fuente es desconocida
 
         // Muestra en la consola los detalles del activo recibido: ID, fuente y RSSI (intensidad de señal)
   console.log(`[ASSET] ID: ${data.trackerID}, ${source}, RSSI: ${data.rssi}`);

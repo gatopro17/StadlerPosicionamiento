@@ -2,16 +2,16 @@ const express = require('express');
 const router = express.Router();
 
 
-const railController = require('../controllers/Rail.Controller');
+const railsController = require('../controllers/Rails.Controller');
 const balizaController = require('../controllers/Balizas.Controller');
 const trackerController = require('../controllers/Tracker.Controller');
 
-// Rutas para Rail
-router.post('/rails', railController.create);        // Crear Rail
-router.get('/rails', railController.findAll);       // Obtener todos los Rails
-router.get('/rails/:id', railController.findById);  // Obtener Rail por ID
-router.put('/rails/:id', railController.update);    // Actualizar Rail
-router.delete('/rails/:id', railController.remove); // Eliminar Rail
+// Rutas para Rails
+router.post('/rails', railsController.create);        // Crear Rails
+router.get('/rails', railsController.findAll);       // Obtener todos los Rails
+router.get('/rails/:id', railsController.findById);  // Obtener Rails por ID
+router.put('/rails/:id', railsController.update);    // Actualizar Rails
+router.delete('/rails/:id', railsController.remove); // Eliminar Rails
 
 // Rutas para Baliza
 router.post('/balizas', balizaController.create);        // Crear Baliza

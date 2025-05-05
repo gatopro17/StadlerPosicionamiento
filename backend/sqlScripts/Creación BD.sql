@@ -70,7 +70,7 @@ CREATE TABLE stadler.couplingLogs (
    id VARCHAR(50) PRIMARY KEY,
    tracker1Id VARCHAR(50),
    tracker2Id VARCHAR(50),
-   rail VARCHAR(50),
+   rails VARCHAR(50),
    rssiDifference INT,
    timestampDiffMs INT,
    created TIMESTAMP
@@ -80,7 +80,7 @@ CREATE TABLE stadler.trackerPositionlogs (
    id VARCHAR(50) PRIMARY KEY,
    trackerId VARCHAR(50),
    trackerName VARCHAR(100),
-   rail VARCHAR(50),
+   rails VARCHAR(50),
    position VARCHAR(100),
    beaconId VARCHAR(50),
    rssi INT,

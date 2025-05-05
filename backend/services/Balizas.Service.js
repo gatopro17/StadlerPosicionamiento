@@ -14,12 +14,12 @@ class BalizasService {
 
   // Obtener todas las Balizas
   async findAll() {
-    return await BaseService.findAll(Balizas, [{ model: require('../models').Rail, as: 'rail' }]);
+    return await BaseService.findAll(Balizas, [{ model: require('../models').Rails, as: 'rails' }]);
   }
 
   // Obtener Baliza por ID
   async findById(id) {
-    return await BaseService.findById(Balizas, id, [{ model: require('../models').Rail, as: 'rail' }]);
+    return await BaseService.findById(Balizas, id, [{ model: require('../models').Rails, as: 'rails' }]);
   }
 
   // Actualizar Baliza

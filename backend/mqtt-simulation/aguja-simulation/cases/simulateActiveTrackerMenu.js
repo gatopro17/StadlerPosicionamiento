@@ -35,9 +35,9 @@ const cases = {
 };
 // Función que infiere la vía y publica el mensaje MQTT con los datos del tracker
 function sendMessage(payload) {
-  const inferredRail = inferTrackLocation(payload.signalMap, payload.switchStates, payload.lastSwitchPassed);
+  const inferredRails = inferTrackLocation(payload.signalMap, payload.switchStates, payload.lastSwitchPassed);
   // Muestra por consola la vía inferida
-  console.log(`📍 Inferred Rail for ${payload.trackerId}: ${inferredRail !== null ? inferredRail : 'No pudo determinarse'}`);
+  console.log(`📍 Inferred Rails for ${payload.trackerId}: ${inferredRails !== null ? inferredRails : 'No pudo determinarse'}`);
   // Publica el mensaje en el topic 'simulation/tracker'
   client.publish('simulation/tracker', JSON.stringify(payload), {}, () => {
     console.log(`✅ Enviado: ${payload.trackerId}`);

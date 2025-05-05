@@ -39,10 +39,10 @@ INSERT INTO Agujas (id, nombre, via_origen, destinoA, destinoB, estado) VALUES
 ('AG5', 'AE2-C13-C14', 'E2', 'C13', 'C14', 'A');
 
 
-INSERT INTO CouplingLogs (id, tracker1Id, tracker2Id, rail, rssiDifference, timestampDiffMs, created) VALUES
+INSERT INTO CouplingLogs (id, tracker1Id, tracker2Id, rails, rssiDifference, timestampDiffMs, created) VALUES
 ('1', 'TRA1', 'TRA3', NULL, -68, NULL, '2025-04-24 16:31:00');
 
-INSERT INTO TrackerPositionLogs (id, trackerId, trackerName, rail, position, beaconId, rssi, created) VALUES
+INSERT INTO TrackerPositionLogs (id, trackerId, trackerName, rails, position, beaconId, rssi, created) VALUES
 ('1', 'TR3', 'Transbordador 3', NULL, NULL, 'beacon-4', NULL, '2025-04-22 16:53:00');
 
 INSERT INTO transbordadores (id, nombre, acoplado, tracker, tipo, parado, via) VALUES

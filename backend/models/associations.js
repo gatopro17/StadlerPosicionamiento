@@ -6,11 +6,9 @@
  * @module Associations
  */
 
-const Rail = require('./Rails');
+const Rails = require('./Rails');
 const Balizas = require('./Balizas');
 const TrackerLogs = require('./Transbordadores');
-const TrackerTransbordador = require('./TrackerTransbordador');
-const BalizasTransbordador = require('./BalizasTransbordador');
 const TrackerActivos = require('./Activos');
 const Agujas = require('./Agujas');
 const TrackerPositionLogs = require('./TrackerPositionLogs');
@@ -53,33 +51,28 @@ Balizas.belongsTo(Vias, {
 
 
 
-// Asociaciones entre Rail y Balizas
+// Asociaciones entre Rails y Balizas
 
-Rail.hasMany(Balizas, { foreignKey: 'mayor', as: 'balizas' });
-
-
-Balizas.belongsTo(Rail, { foreignKey: 'mayor', as: 'rail' });
-
-// Asociaciones entre Rail y TrackerLogs
-
-Rail.hasMany(TrackerLogs, { foreignKey: 'mayor', as: 'trackerLogs' });
+Rails.hasMany(Balizas, { foreignKey: 'mayor', as: 'balizas' });
 
 
-TrackerLogs.belongsTo(Rail, { foreignKey: 'mayor', as: 'rail' });
+Balizas.belongsTo(Rails, { foreignKey: 'mayor', as: 'rails' });
+
+// Asociaciones entre Rails y TrackerLogs
+
+Rails.hasMany(TrackerLogs, { foreignKey: 'mayor', as: 'trackerLogs' });
 
 
-// Relación TrackerTransbordador -> BalizasTransbordador (1:N)
-TrackerTransbordador.hasMany(BalizasTransbordador, { foreignKey: 'trackerId', as: 'balizas' });
-BalizasTransbordador.belongsTo(TrackerTransbordador, { foreignKey: 'trackerId', as: 'tracker' });
+TrackerLogs.belongsTo(Rails, { foreignKey: 'mayor', as: 'rails' });
+
+
 
 
 module.exports = {
   
-  Rail,
+  Rails,
   Balizas,
   TrackerLogs,
-  TrackerTransbordador,
-  BalizasTransbordador,
   TrackerActivos,
   Agujas,
   TrackerPositionLogs,

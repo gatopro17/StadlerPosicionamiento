@@ -1,6 +1,6 @@
 require("dotenv").config();
 const BaseService = require('./Base.Service');
-const { TrackerLogs, Rail } = require('../models/associations');
+const { TrackerLogs, Rails } = require('../models/associations');
 
 class TrackerService {
   // Crear Tracker
@@ -10,12 +10,12 @@ class TrackerService {
 
   // Obtener todos los Trackers
   async findAll() {
-    return await BaseService.findAll(TrackerLogs, [{ model: Rail, as: 'Rail' }]);
+    return await BaseService.findAll(TrackerLogs, [{ model: Rails, as: 'Rails' }]);
   }
 
   // Obtener Tracker por ID
   async findById(id) {
-    return await BaseService.findById(TrackerLogs, id, [{ model: Rail, as: 'Rail' }]);
+    return await BaseService.findById(TrackerLogs, id, [{ model: Rails, as: 'Rails' }]);
   }
 
   // Actualizar Tracker
@@ -35,8 +35,8 @@ class TrackerService {
    * 
    * @param {Object} posicion - Un objeto que contiene los detalles de la posición del tracker.
    * @param {string} posicion.nombre - El nombre de la baliza o posición.
-   * @param {number} posicion.mayor - El valor mayor de la baliza (referente al rail).
-   * @param {number} posicion.minor - El valor menor de la baliza (referente a la posición en el rail).
+   * @param {number} posicion.mayor - El valor mayor de la baliza (referente al rails).
+   * @param {number} posicion.minor - El valor menor de la baliza (referente a la posición en el rails).
    * @param {number} posicion.trackerId - El ID del tracker asociado a esta posición.
    * @returns {Promise<Object>} El nuevo log de TrackerLogs creado.
    * @throws {Error} Si ocurre un error durante el registro del log.
@@ -52,7 +52,7 @@ class TrackerService {
         trackerId: posicion.trackerId
       });
 
-      console.log(`✔ Log registrado para tracker ${posicion.trackerId}: rail ${posicion.mayor}, posición ${posicion.minor}`);
+      console.log(`✔ Log registrado para tracker ${posicion.trackerId}: rails ${posicion.mayor}, posición ${posicion.minor}`);
       return log;
     } catch (error) {
       console.error('❌ Error al registrar log desde MQTT:', error);
