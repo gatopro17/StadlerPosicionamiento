@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const Agujas = sequelize.define('Agujas', {
+const Trackers = sequelize.define('Trackers', {
   id: {
     type: DataTypes.STRING(5),
     primaryKey: true,
@@ -10,25 +10,17 @@ const Agujas = sequelize.define('Agujas', {
     type: DataTypes.STRING(100),
     allowNull: true,
   },
-  via_origen: {
-    type: DataTypes.STRING(100),
+  tracker_id: {
+    type: DataTypes.STRING(5),
     allowNull: true,
   },
-  destinoA: {
+  tipo: {
     type: DataTypes.STRING(50),
-    allowNull: true,
-  },
-  destinoB: {
-    type: DataTypes.STRING(50),
-    allowNull: true,
-  },
-  estado: {
-    type: DataTypes.STRING(1),
     allowNull: true,
   },
 }, {
-  tableName: 'agujas',
+  tableName: 'trackers',
   timestamps: false,
 });
 
-module.exports = Agujas;
+module.exports = Trackers;

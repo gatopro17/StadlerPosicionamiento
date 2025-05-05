@@ -1,28 +1,20 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const CouplingLogs = sequelize.define('CouplingLogs', {
+const AssetMountLogs = sequelize.define('AssetMountLogs', {
   id: {
     type: DataTypes.STRING(50),
     primaryKey: true,
   },
-  tracker1Id: {
+  asset: {
     type: DataTypes.STRING(50),
     allowNull: true,
   },
-  tracker2Id: {
+  mountedOn: {
     type: DataTypes.STRING(50),
     allowNull: true,
   },
-  rail: {
-    type: DataTypes.STRING(50),
-    allowNull: true,
-  },
-  rssiDifference: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-  },
-  timestampDiffMs: {
+  rssi: {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
@@ -31,8 +23,8 @@ const CouplingLogs = sequelize.define('CouplingLogs', {
     allowNull: true,
   },
 }, {
-  tableName: 'couplingLogs',
+  tableName: 'assetMountLogs',
   timestamps: false,
 });
 
-module.exports = CouplingLogs;
+module.exports = AssetMountLogs;

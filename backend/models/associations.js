@@ -6,15 +6,51 @@
  * @module Associations
  */
 
-const Rail = require('./Rail');
+const Rail = require('./Rails');
 const Balizas = require('./Balizas');
-const TrackerLogs = require('./TrackerLogs');
+const TrackerLogs = require('./Transbordadores');
 const TrackerTransbordador = require('./TrackerTransbordador');
 const BalizasTransbordador = require('./BalizasTransbordador');
-const TrackerActivos = require('./TrackerActivos');
+const TrackerActivos = require('./Activos');
 const Agujas = require('./Agujas');
 const TrackerPositionLogs = require('./TrackerPositionLogs');
 const CouplingLogs = require('./CouplingLogs');
+const Transbordadores = require('./Transbordadores');
+const Trackers = require('./Trackers');
+const Vias = require('./Vias');
+
+// --- Asociación: transbordadores.acoplado -> transbordadores.id (self-association)
+Transbordadores.belongsTo(Transbordadores, {
+  foreignKey: 'acoplado',
+  as: 'Acoplado',
+  onUpdate: 'CASCADE',
+  onDelete: 'CASCADE',
+});
+
+// --- Asociación: transbordadores.tracker -> trackers.id
+Transbordadores.belongsTo(Trackers, {
+  foreignKey: 'tracker',
+  as: 'Tracker',
+  onUpdate: 'CASCADE',
+  onDelete: 'CASCADE',
+});
+
+// --- Asociación: transbordadores.via -> vias.id
+Transbordadores.belongsTo(Vias, {
+  foreignKey: 'via',
+  as: 'Via',
+  onUpdate: 'CASCADE',
+  onDelete: 'CASCADE',
+});
+
+// --- Asociación: balizas.via -> vias.id
+Balizas.belongsTo(Vias, {
+  foreignKey: 'via',
+  as: 'Via',
+  onUpdate: 'CASCADE',
+  onDelete: 'CASCADE',
+});
+
 
 
 // Asociaciones entre Rail y Balizas
@@ -47,5 +83,8 @@ module.exports = {
   TrackerActivos,
   Agujas,
   TrackerPositionLogs,
-  CouplingLogs
+  CouplingLogs,
+  Transbordadores,
+  Trackers,
+  Vias
 };

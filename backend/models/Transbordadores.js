@@ -1,17 +1,21 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const Balizas = sequelize.define('Balizas', {
+const Transbordadores = sequelize.define('Transbordadores', {
   id: {
-    type: DataTypes.STRING(10),
+    type: DataTypes.STRING(4),
     primaryKey: true,
   },
   nombre: {
     type: DataTypes.STRING(45),
     allowNull: true,
   },
-  balizaid: {
-    type: DataTypes.STRING(10),
+  acoplado: {
+    type: DataTypes.STRING(4),
+    allowNull: true,
+  },
+  tracker: {
+    type: DataTypes.STRING(5),
     allowNull: true,
   },
   tipo: {
@@ -22,13 +26,13 @@ const Balizas = sequelize.define('Balizas', {
     type: DataTypes.STRING(3),
     allowNull: true,
   },
-  mayor: {
+  parado: {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
 }, {
-  tableName: 'balizas',
+  tableName: 'transbordadores',
   timestamps: false,
 });
 
-module.exports = Balizas;
+module.exports = Transbordadores;
