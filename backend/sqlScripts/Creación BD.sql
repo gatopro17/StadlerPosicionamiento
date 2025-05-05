@@ -1,10 +1,10 @@
 CREATE TABLE `stadler`.`transbordadores` (
-  `id` VARCHAR(4) NOT NULL,
+  `id` VARCHAR(10) NOT NULL,
   `nombre` VARCHAR(45) NULL,
-  `acoplado` VARCHAR(4) NULL,
-  `tracker` VARCHAR(5) NULL,
+  `acoplado` VARCHAR(10) NULL,
+  `tracker` VARCHAR(10) NULL,
   `tipo` VARCHAR(20) NULL,
-  `via` VARCHAR(3) NULL,
+  `via` VARCHAR(10) NULL,
   `parado` INT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE);
@@ -14,7 +14,7 @@ CREATE TABLE `stadler`.`balizas` (
   `nombre` VARCHAR(45) NULL,
   `balizaid` VARCHAR(10) NULL,
   `tipo` VARCHAR(20) NULL,
-  `via` VARCHAR(3) NULL,
+  `via` VARCHAR(10) NULL,
   `mayor` INT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE);
