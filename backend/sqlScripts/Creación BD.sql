@@ -1,33 +1,88 @@
-CREATE DATABASE IF NOT EXISTS `stadler`;
-USE `stadler`;
- 
--- Table structure for table `rail`
-DROP TABLE IF EXISTS `rail`;
-CREATE TABLE `rail` (
-  `id` int NOT NULL,
-  PRIMARY KEY (`id`)
-);
- 
--- Table structure for table `balizas`
-DROP TABLE IF EXISTS `balizas`;
-CREATE TABLE `balizas` (
-  `id` int NOT NULL,
-  `mayor` int NOT NULL,
-  `minor` int NOT NULL,
-  `nombre` varchar(45) DEFAULT NULL,
+CREATE TABLE `stadler`.`transbordadores` (
+  `id` VARCHAR(4) NOT NULL,
+  `nombre` VARCHAR(45) NULL,
+  `acoplado` VARCHAR(4) NULL,
+  `tracker` VARCHAR(5) NULL,
+  `tipo` VARCHAR(20) NULL,
+  `via` VARCHAR(3) NULL,
+  `parado` INT NULL,
   PRIMARY KEY (`id`),
-  KEY `rail` (`mayor`),
-  CONSTRAINT `balizas_ibfk_1` FOREIGN KEY (`mayor`) REFERENCES `rail` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE);
+
+CREATE TABLE `stadler`.`balizas` (
+  `id` VARCHAR(10) NOT NULL,
+  `nombre` VARCHAR(45) NULL,
+  `balizaid` VARCHAR(10) NULL,
+  `tipo` VARCHAR(20) NULL,
+  `via` VARCHAR(3) NULL,
+  `mayor` INT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE);
+
+CREATE TABLE stadler.trackers (
+   id VARCHAR(10) PRIMARY KEY,
+   nombre VARCHAR(100),
+   tracker_id VARCHAR(10),
+   tipo VARCHAR(50)
 );
- 
--- Table structure for table `trackerLogs`
-DROP TABLE IF EXISTS `trackerLogs`;
-CREATE TABLE `trackerLogs` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `trackerId` int NOT NULL,
-  `nombre` varchar(145) DEFAULT NULL,
-  `mayor` int NOT NULL,
-  `minor` int NOT NULL,
-  `created` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+
+CREATE TABLE stadler.activos (
+id VARCHAR(20) PRIMARY KEY,
+   nombre VARCHAR(100)
+);
+
+
+
+CREATE TABLE stadler.polygons (
+   id VARCHAR(50) PRIMARY KEY,
+   type VARCHAR(50),
+   coordinates TEXT
+);
+
+CREATE TABLE stadler.vias (
+   id VARCHAR(10) PRIMARY KEY
+);
+
+CREATE TABLE stadler.rails (
+   id INT PRIMARY KEY,
+   coordinates TEXT
+);
+
+
+CREATE TABLE stadler.agujas (
+   id VARCHAR(10) PRIMARY KEY,
+   nombre VARCHAR(100),
+   via_origen VARCHAR(100),
+   destinoA VARCHAR(50),
+   destinoB VARCHAR(50),
+   estado VARCHAR(1)
+);
+
+CREATE TABLE stadler.assetMountLogs (
+   id VARCHAR(50) PRIMARY KEY,
+   asset VARCHAR(50),
+   mountedOn VARCHAR(50),
+   rssi INT,
+   created TIMESTAMP
+);
+
+CREATE TABLE stadler.couplingLogs (
+   id VARCHAR(50) PRIMARY KEY,
+   tracker1Id VARCHAR(50),
+   tracker2Id VARCHAR(50),
+   rail VARCHAR(50),
+   rssiDifference INT,
+   timestampDiffMs INT,
+   created TIMESTAMP
+);
+
+CREATE TABLE stadler.trackerPositionlogs (
+   id VARCHAR(50) PRIMARY KEY,
+   trackerId VARCHAR(50),
+   trackerName VARCHAR(100),
+   rail VARCHAR(50),
+   position VARCHAR(100),
+   beaconId VARCHAR(50),
+   rssi INT,
+   created TIMESTAMP
 );
