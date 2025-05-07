@@ -39,47 +39,7 @@ function areCoupled(trackerData) {
 }
 
 
-// Función para comprobar el acoplamiento entre el tracker actual y otros trackers en los buffers.
-function checkCoupling(trackerID, data) {
-    const largeTransbordadores = ['T-1', 'T-2'];
-    const smallTransponders = ['T-3'];
-    const beaconID = data.beaconId;
-    
-    // Verificamos si el tracker actual es un transbordador grande
-    if (!largeTransbordadores.includes(trackerID)) return false;
 
-    // Verificamos si el beacon recibido corresponde a un transbordador pequeño
-    const isFromSmallTransbordador = smallTransponders.includes(beaconID);
-    if (!isFromSmallTransbordador) return false;
-
-    // Verificamos los umbrales
-    const currentTime = Date.now();
-    const timeDiff = Math.abs(currentTime - data.timestamp);
-    const isValidRSSI = data.rssi > -COUPLING_RSSI_THRESHOLD;
-    const isRecent = timeDiff < COUPLING_TIMESTAMP_THRESHOLD;
-    if (isValidRSSI && isRecent) {
-        const message = `🚦 Acoplamiento Detectado: Transbordador grande ${data.trackerName} (ID: ${trackerID}) ha detectado al pequeño ${beaconID} en Rails ${data.rails}`;
-        console.log(message);
-        datos= {
-            tracker1Id: trackerID,
-            tracker2Id: beaconID,
-            rails: data.rails,
-            rssiDifference: data.rssi,
-            timestampDiffMs: timeDiff
-        };
-        handleCouplingLog(datos); // Guarda el log de acoplamiento
-        console.log(`Log de acoplamiento guardado para ${trackerID} y ${beaconID}`);
-
-        // Actualizamos estado
-        state.setTrackerStatus(trackerID, `Acoplado con ${beaconID}`);
-        state.setTrackerStatus(beaconID, `Acoplado con ${trackerID}`);
-
-        printer.printStatus();
-        return true;
-    }
-
-    return false;
-}
 
 
 // Función para obtener el estado de un tracker.
@@ -116,7 +76,7 @@ function processMessage(data, type = 'tracker') {
 
     // Aplica la lógica dependiendo del tipo de dispositivo
     if (type === 'tracker') {
-        const coupled = checkCoupling(trackerID, data); // Verifica acoplamiento
+       
         const status = getTrackerStatus(trackerID); // Obtiene estado (ahora revisa si está acoplado)
 
         state.setTrackerStatus(trackerID, status);
