@@ -16,7 +16,7 @@ INSERT INTO Vias (id) VALUES
 ('C7'), ('C8'), ('C9'), ('C10'), ('C11'), ('C12'),
 ('C13'), ('C14'),
 ('CO1'), ('CO2'), ('CO3'), ('CO4'), ('CO5'),
-('E1L'), ('E1C'), ('E2C'), ('E2L'), ('TRA1'), ('TRA2'), ('TRA3');
+('E1L'), ('E1C'), ('E2C'), ('E2L');
 
 INSERT INTO Activos (id, nombre) VALUES
 ('A1', 'Activo A1'),
@@ -45,7 +45,7 @@ INSERT INTO CouplingLogs (id, tracker1Id, tracker2Id, rails, rssiDifference, tim
 INSERT INTO TrackerPositionLogs (id, trackerId, trackerName, rails, position, beaconId, rssi, created) VALUES
 ('1', 'TR3', 'Transbordador 3', NULL, NULL, 'beacon-4', NULL, '2025-04-22 16:53:00');
 
-INSERT INTO transbordadores (id, nombre, acoplado, tracker, tipo, parado, via) VALUES
+INSERT INTO transbordadores (id, nombre, acoplado, tracker, tipo, parado, via1, via2, baliza)*** VALUES
 ('TRA1', 'Transbordador autonomo 1', NULL, 'TTRA1', 'Autonomo', TRUE, NULL),
 ('TRA2', 'Transbordador autonomo 2', NULL, 'TTRA2', 'Autonomo', TRUE, NULL),
 ('TRA3', 'Transbordador autonomo 3', NULL, 'TTRA3', 'Autonomo', TRUE, NULL),

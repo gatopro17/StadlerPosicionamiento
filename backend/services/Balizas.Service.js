@@ -1,6 +1,7 @@
 // BalizaService.js
 const BaseService = require('./Base.Service');
-const { Balizas } = require('../models/Balizas');
+const { Balizas } = require('../models/associations');
+require("dotenv").config();
 
 /**
  * Servicio que maneja las operaciones CRUD para las balizas.

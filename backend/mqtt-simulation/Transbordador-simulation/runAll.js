@@ -11,7 +11,8 @@ const scripts = [
   { name: 'transbordador-mediano', args: ['transbordador-mediano'] }, // Simulador de transbordador mediano
   { name: 'assetListener', path: './listener/assetListener.js' }, // Script que escucha mensajes de activos
   { name: 'trackerListener', path: './listener/trackerListener.js' }, // Script que escucha mensajes de trackers
-  { name: 'logger', path: './listener/logger.js' }                // Script que registra los datos recibidos
+  { name: 'logger', path: './listener/logger.js' },               // Script que registra los datos recibidos
+  { name: 'transbordadorListener', path: './listener/transbordadorListener.js' }
 ];
 
 // Recorre cada configuración del array para iniciar los procesos correspondientes

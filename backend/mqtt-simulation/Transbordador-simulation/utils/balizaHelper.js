@@ -1,10 +1,81 @@
 // Función para generar una baliza de tipo cabecera para un rails específico
+
+const getRandomIntensity = require("./randomIntensity");
+
 // La cabecera tiene una posición fija (minor = 1) y un identificador basado en el número de rails.
-const generateCabeceraBeacon = (railsNumber) => ({
-  id: `cabecera-${railsNumber}`,  // El ID de la cabecera está basado en el número de rails.
-  mayor: railsNumber,             // 'Mayor' es el número del rails.
-  minor: 1,                      // La posición de la cabecera siempre es 1.
-});
+rail = Math.floor(Math.random() * 7) + 1;
+
+function generateCabeceraBeacon() {
+  const rail = Math.floor(Math.random() * 7) + 1;
+  
+  const balizas = {
+    cabecera1: {
+      id: `C${rail}C1`,
+      intensidad: getRandomIntensity(),
+    },
+    cabecera2: {
+      id: `C${rail}C2`,
+      intensidad: getRandomIntensity(),
+    },
+    extra1: {
+      id: `C${rail}_01`,
+      intensidad: getRandomIntensity(),
+    },
+    extra2: {
+      id: `C${rail}_02`,
+      intensidad: getRandomIntensity(),
+    }
+  };
+
+  if (rail === 1 || rail === 2) {
+    balizas.coupled = {
+      id: `TRC1_0${rail}`,
+      intensidad: getRandomIntensity(),
+    };
+  }
+
+  return balizas;
+}
+
+
+function generateAcopladoBeacon() {
+  let rail = Math.floor(Math.random() * 7) + 1;
+  const traRandom = Math.floor(Math.random() * 3) + 1;
+
+  // Forzar rail válido si no es 1 ni 2
+  if (rail !== 1 && rail !== 2) {
+    rail = Math.floor(Math.random() * 7) + 1;
+  }
+
+  const balizas = {
+    cabecera1: {
+      id: `C${rail}C1`,
+      intensidad: getRandomIntensity(),
+    },
+    cabecera2: {
+      id: `C${rail}C2`,
+      intensidad: getRandomIntensity(),
+    },
+    extra1: {
+      id: `C${rail}_01`,
+      intensidad: getRandomIntensity(),
+    },
+    extra2: {
+      id: `C${rail}_02`,
+      intensidad: getRandomIntensity(),
+    }
+  };
+
+  if (rail === 1 || rail === 2) {
+    balizas.coupled = {
+      id: `TRA${traRandom}_0${rail}`,
+      intensidad: getRandomIntensity(),
+    };
+  }
+
+  return balizas;
+}
+
 
 // Función para generar las balizas de un transbordador (grande, mediano, pequeño) basado en su ID.
 const generateTransbordadorBeacon = (id) => {
@@ -20,14 +91,6 @@ const generateTransbordadorBeacon = (id) => {
       trackerID: prefix,             // ID del tracker (transbordador), por ejemplo: T-1.
       mayor: 100 + id,               // Número mayor (rails) asociado con el transbordador.
       minor: i + 1                   // Número minor, representando la posición de la baliza en el transbordador (de 1 a 6).
-    }));
-  } else if (id === 2) {  // Si el ID es 2, el transbordador es mediano.
-    beacons = Array.from({ length: 4 }, (_, i) => ({
-      id: `M${i + 1}`,               // ID de la baliza, como M1, M2, M3, M4.
-      nombre: `Baliza M${i + 1}`,     // Nombre de la baliza, como "Baliza M1", "Baliza M2", etc.
-      trackerID: prefix,             // ID del tracker (transbordador), por ejemplo: T-2.
-      mayor: 100 + id,               // Número mayor (rails) asociado con el transbordador.
-      minor: i + 1                   // Número minor, representando la posición de la baliza en el transbordador (de 1 a 4).
     }));
   } else if (id === 3) {  // Si el ID es 3, el transbordador es pequeño.
     beacons = [{
@@ -46,4 +109,5 @@ const generateTransbordadorBeacon = (id) => {
 module.exports = {
   generateCabeceraBeacon,    // Exporta la función para generar balizas de cabecera.
   generateTransbordadorBeacon,  // Exporta la función para generar balizas de transbordador.
+  generateAcopladoBeacon
 };
