@@ -1,6 +1,6 @@
 // BalizaService.js
-const BaseService = require('./Base.Service');
-const { Balizas } = require('../models/associations');
+const BaseService = require("./Base.Service");
+const { Balizas } = require("../models/associations");
 require("dotenv").config();
 
 /**
@@ -15,12 +15,12 @@ class BalizasService {
 
   // Obtener todas las Balizas
   async findAll() {
-    return await BaseService.findAll(Balizas, [{ model: require('../models').Rails, as: 'rails' }]);
+    return await BaseService.findAll(Balizas);
   }
 
   // Obtener Baliza por ID
   async findById(id) {
-    return await BaseService.findById(Balizas, id, [{ model: require('../models').Rails, as: 'rails' }]);
+    return await BaseService.findById(Balizas, id);
   }
 
   // Actualizar Baliza
