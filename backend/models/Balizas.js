@@ -1,34 +1,38 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/database");
 
-const Balizas = sequelize.define('Balizas', {
-  id: {
-    type: DataTypes.STRING(10),
-    primaryKey: true,
+const Balizas = sequelize.define(
+  "Balizas",
+  {
+    id: {
+      type: DataTypes.STRING(10),
+      primaryKey: true,
+    },
+    nombre: {
+      type: DataTypes.STRING(45),
+      allowNull: true,
+    },
+    balizaid: {
+      type: DataTypes.STRING(10),
+      allowNull: true,
+    },
+    tipo: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+    },
+    via: {
+      type: DataTypes.STRING(3),
+      allowNull: true,
+    },
+    activo: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+    },
   },
-  nombre: {
-    type: DataTypes.STRING(45),
-    allowNull: true,
-  },
-  balizaid: {
-    type: DataTypes.STRING(10),
-    allowNull: true,
-  },
-  tipo: {
-    type: DataTypes.STRING(20),
-    allowNull: true,
-  },
-  via: {
-    type: DataTypes.STRING(3),
-    allowNull: true,
-  },
-  mayor: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-  },
-}, {
-  tableName: 'balizas',
-  timestamps: false,
-});
+  {
+    tableName: "balizas",
+    timestamps: false,
+  }
+);
 
 module.exports = Balizas;
