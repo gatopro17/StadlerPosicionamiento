@@ -29,7 +29,11 @@ async function posxBaliza(data) {
   if (via === "TRA") {
     via = balizas[0].name.toString().slice(0, 4);
   }
-  console.log(via);
+
+  const track = balizas[0].tracker;
+
+  console.log("Track: " + track);
+  console.log("Baliza más potente: " + via);
   let confirm = "Desc";
   switch (via) {
     case "C14":
@@ -59,13 +63,13 @@ async function posxBaliza(data) {
       break;
 
     case "E1C":
-      // Puede venir de E1 E2 o TRA123.
+      // Puede venir de E1 E2 o TRA1-TRA3.
       break;
     case "E1L":
       // Puede venir de GPS o C08-C12.
       break;
     case "E2C":
-      // Puede venir de  GPS (E1 E2) o TRA123.
+      // Puede venir de  GPS (E1 E2) o TRA1-TRA3.
       break;
     case "E2L":
       // Puede venir de GPS o C13-C14.
@@ -79,15 +83,13 @@ async function posxBaliza(data) {
       break;
 
     case "TRA1":
-      break;
     case "TRA2":
-      break;
     case "TRA3":
       // Puede venir de CO1-CO4 o E1C o E2C o C01-C07
       break;
 
     default:
-      console.log("No hay baliza activa en la ruta de las agujas");
+      console.log("No hay baliza activa en la ruta.");
   }
 
   if (via !== confirm) {
@@ -96,6 +98,7 @@ async function posxBaliza(data) {
 
   // Guardar el valor en Baliza
   console.log(via);
+
   return via;
 }
 
