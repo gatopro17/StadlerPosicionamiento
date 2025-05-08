@@ -73,16 +73,26 @@ async function posxBaliza(data) {
       break;
 
     case "E1C":
-      // Puede venir de E1 o TRA1-TRA3.
+      // Puede venir de E1L o TRA1-TRA3.
       break;
     case "E1L":
       // Puede venir de GPS o C08-C12.
+      confirm = await c08c12();
+      const balizasBus = await quitarTracker(confirm, track);
+      console.log(balizasBus);
+      if (balizasBus === 0) {
+        // No viene de C08-C12
+        confirm = via;
+      } else {
+        // Viene de C08-C12
+        confirm = via;
+      }
       break;
     case "E2C":
-      // Puede venir de E2 o TRA1-TRA3.
+      // Puede venir de E2L o TRA1-TRA3.
       break;
     case "E2L":
-      // Puede venir de GPS o C13-C14.
+      // Viene de GPS o C13-C14.
       confirm = await c13c14();
       const balizasBuscar = await quitarTracker(confirm, track);
       console.log(balizasBuscar);
