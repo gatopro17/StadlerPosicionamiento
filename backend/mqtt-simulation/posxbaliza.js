@@ -1,6 +1,9 @@
 const connectMQTT = require("./Transbordador-simulation/utils/mqttClient.js");
+const Transbordadores = require("../models/Transbordadores.js");
 const Agujas = require("../models/Agujas.js");
 const sequelize = require("../config/database.js");
+const { Sequelize } = require("sequelize");
+const { Op } = require("sequelize");
 
 const client = connectMQTT();
 
@@ -16,7 +19,7 @@ client.on("message", (topic, message) => {
   posxBaliza(data);
 });
 
-function posxBaliza(data) {
+async function posxBaliza(data) {
   // Ordenar las valizas por valores
   const balizas = data;
   balizas.sort((a, b) => a.max - b.max);
@@ -26,13 +29,13 @@ function posxBaliza(data) {
   if (via === "TRA") {
     via = balizas[0].name.toString().slice(0, 4);
   }
-
+  console.log(via);
   let confirm = "Desc";
   switch (via) {
     case "C14":
     case "C13":
       // Viene de E2
-      confirm = agujas2();
+      confirm = await agujas2();
       break;
 
     case "C12":
@@ -41,7 +44,7 @@ function posxBaliza(data) {
     case "C09":
     case "C08":
       // Viene de E1
-      confirm = agujas1();
+      confirm = await agujas1();
       break;
 
     case "C07":
@@ -51,7 +54,8 @@ function posxBaliza(data) {
     case "C03":
     case "C02":
     case "C01":
-      // Puede venir TRA1-TRA3
+      // Viene de TRA1-TRA3
+      confirm = await transbordador(via);
       break;
 
     case "E1C":
@@ -68,23 +72,15 @@ function posxBaliza(data) {
       break;
 
     case "CO1":
-      // Puede venir de TRA1-TRA3.
-      break;
     case "CO2":
-      // Puede venir de TRA1-TRA3.
-      break;
     case "CO3":
-      // Puede venir de TRA1-TRA3.
-      break;
     case "CO4":
       // Puede venir de TRA1-TRA3.
       break;
 
     case "TRA1":
-      // Puede venir de CO1-CO4 o E1C o E2C o C01-C07
       break;
     case "TRA2":
-      // Puede venir de CO1-CO4 o E1C o E2C o C01-C07
       break;
     case "TRA3":
       // Puede venir de CO1-CO4 o E1C o E2C o C01-C07
@@ -99,11 +95,57 @@ function posxBaliza(data) {
   }
 
   // Guardar el valor en Baliza
+  console.log(via);
   return via;
 }
 
+async function transbordador(via) {
+  const trans = await Transbordadores.findAll({
+    where: {
+      id: { [Op.startsWith]: "TRA" },
+    },
+  });
+  trans.sort((a, b) => {
+    if (a.dataValues.via > b.dataValues.via) {
+      return 1;
+    }
+    if (a.dataValues.via < b.dataValues.via) {
+      return -1;
+    }
+    return 0;
+  });
+
+  console.log(trans[0].dataValues.id, trans[0].dataValues.via);
+  console.log(trans[1].dataValues.id, trans[1].dataValues.via);
+  console.log(trans[2].dataValues.id, trans[2].dataValues.via);
+
+  if (
+    via ===
+    (trans[0].dataValues.via ||
+      trans[1].dataValues.via ||
+      trans[2].dataValues.via)
+  ) {
+    return via;
+  } else {
+    const via1 = [];
+    via1[0] = parseInt(trans[0].dataValues.via.slice(1, 3));
+    via1[1] = parseInt(trans[1].dataValues.via.slice(1, 3));
+    via1[2] = parseInt(trans[2].dataValues.via.slice(1, 3));
+    const trans1 = parseInt(via.slice(1, 3)) + 1;
+    const trans2 = parseInt(via.slice(1, 3)) - 1;
+    console.log(trans1);
+    console.log(trans2);
+    for (let i = 0; i <= 2; i++) {
+      if (via1[i] == trans1 || via1[i] == trans2) {
+        return trans[i].dataValues.via;
+      }
+    }
+    // Error Transbordador demasiado lejos
+  }
+}
+
 async function agujas1() {
-  const agujas = (await findAll()).sort(
+  const agujas = (await Agujas.findAll()).sort(
     (a, b) => a.dataValues.id - b.dataValues.id
   );
   console.log(agujas[0].dataValues.id);
@@ -131,7 +173,7 @@ async function agujas1() {
 }
 
 async function agujas2() {
-  const agujas = (await findAll()).sort((a, b) => a.id - b.id);
+  const agujas = (await Agujas.findAll()).sort((a, b) => a.id - b.id);
 
   if (agujas[4].dataValues.estado === "A") {
     return agujas[4].dataValues.destinoA;
