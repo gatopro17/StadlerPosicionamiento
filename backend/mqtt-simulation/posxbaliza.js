@@ -25,7 +25,7 @@ async function posxBaliza(data) {
   const balizas = data;
   balizas.sort((a, b) => a.max - b.max);
 
-  // Tomar nombre de baliza más potente
+  // Tomar via de baliza más potente
   let via = balizas[0].name.toString().slice(0, 3);
   let restoVia = balizas[0].name.toString().slice(3, 11);
   if (via === "TRA") {
@@ -33,16 +33,18 @@ async function posxBaliza(data) {
     restoVia = balizas[0].name.toString().slice(4, 11);
   }
 
+  // Tomar el tracker de la baliza más potente.
   const track = balizas[0].tracker;
 
   console.log("Track: " + track);
   console.log("Baliza más potente: " + via);
-  let confirm = "Desc";
+
+  let confirm = "Desconocida";
   switch (via) {
     case "C14":
     case "C13":
       // Viene de E2
-      confirm = await agujas2();
+      confirm = await c13c14();
       break;
 
     case "C12":
@@ -51,7 +53,7 @@ async function posxBaliza(data) {
     case "C09":
     case "C08":
       // Viene de E1
-      confirm = await agujas1();
+      confirm = await c8c12();
       break;
 
     case "C07":
@@ -62,20 +64,35 @@ async function posxBaliza(data) {
     case "C02":
     case "C01":
       // Viene de TRA1-TRA3
-      confirm = await transbordador(via);
+      try {
+        confirm = await transbordador(via);
+      } catch (error) {
+        console.error("Error en la función transbordador:", error.message); // Salir de la función si hay un error
+        return;
+      }
       break;
 
     case "E1C":
-      // Puede venir de E1 E2 o TRA1-TRA3.
+      // Puede venir de E1 o TRA1-TRA3.
       break;
     case "E1L":
       // Puede venir de GPS o C08-C12.
       break;
     case "E2C":
-      // Puede venir de  GPS (E1 E2) o TRA1-TRA3.
+      // Puede venir de E2 o TRA1-TRA3.
       break;
     case "E2L":
       // Puede venir de GPS o C13-C14.
+      confirm = await c13c14();
+      const balizasBuscar = await quitarTracker(confirm, track);
+      console.log(balizasBuscar);
+      if (balizasBuscar === 0) {
+        // No viene de C13-C14
+        confirm = via;
+      } else {
+        // Viene de C13-C14
+        confirm = via;
+      }
       break;
 
     case "CO1":
@@ -100,33 +117,21 @@ async function posxBaliza(data) {
   }
 
   // Guardar el valor en Baliza
-  console.log(via);
   const viaGuardar = via + restoVia;
-  console.log(viaGuardar);
-  Balizas.update(
-    { tracker: track },
-    {
-      where: {
-        id: viaGuardar,
-      },
-    }
-  )
-    .then(() => {
-      console.log("Baliza actualizada correctamente.");
-    })
-    .catch((error) => {
-      console.error("Error al actualizar la baliza:", error);
-    });
+  console.log("Guardar en Baliza: " + viaGuardar);
 
-  return via;
+  guardarBaliza(viaGuardar, track);
 }
 
 async function transbordador(via) {
+  //Leer todos los Transbordadores de la BBDD
   const trans = await Transbordadores.findAll({
     where: {
       id: { [Op.startsWith]: "TRA" },
     },
   });
+
+  // Ordenar los transbordadores por el valor de la via
   trans.sort((a, b) => {
     if (a.dataValues.via > b.dataValues.via) {
       return 1;
@@ -141,6 +146,7 @@ async function transbordador(via) {
   console.log(trans[1].dataValues.id, trans[1].dataValues.via);
   console.log(trans[2].dataValues.id, trans[2].dataValues.via);
 
+  // Si está en la vía correcta, devolver via.
   if (
     via ===
     (trans[0].dataValues.via ||
@@ -149,24 +155,23 @@ async function transbordador(via) {
   ) {
     return via;
   } else {
+    // Si no está en la via correcta, comprobar si esta en la anterior o posterior.
     const via1 = [];
     via1[0] = parseInt(trans[0].dataValues.via.slice(1, 3));
     via1[1] = parseInt(trans[1].dataValues.via.slice(1, 3));
     via1[2] = parseInt(trans[2].dataValues.via.slice(1, 3));
     const trans1 = parseInt(via.slice(1, 3)) + 1;
     const trans2 = parseInt(via.slice(1, 3)) - 1;
-    console.log(trans1);
-    console.log(trans2);
     for (let i = 0; i <= 2; i++) {
       if (via1[i] == trans1 || via1[i] == trans2) {
         return trans[i].dataValues.via;
       }
     }
-    // Error Transbordador demasiado lejos
+    throw new Error("Transbordador demasiado lejos.");
   }
 }
 
-async function agujas1() {
+async function c8c12() {
   const agujas = (await Agujas.findAll()).sort(
     (a, b) => a.dataValues.id - b.dataValues.id
   );
@@ -194,21 +199,53 @@ async function agujas1() {
   return agujas[3].dataValues.destinoB;
 }
 
-async function agujas2() {
-  const agujas = (await Agujas.findAll()).sort((a, b) => a.id - b.id);
-
-  if (agujas[4].dataValues.estado === "A") {
-    return agujas[4].dataValues.destinoA;
-  } else {
-    return agujas[4].dataValues.destinoB;
+async function c13c14() {
+  try {
+    const aguja = await Agujas.findOne({
+      where: {
+        id: "AG5",
+      },
+    });
+    if (aguja.dataValues.estado === "A") {
+      return aguja.dataValues.destinoA;
+    } else {
+      return aguja.dataValues.destinoB;
+    }
+  } catch (error) {
+    throw new Error(`Error fetching Aguja: ${error.message}`);
   }
 }
 
-const findAll = async () => {
+async function quitarTracker(confirm, track) {
   try {
-    const records = await Agujas.findAll();
-    return records;
+    actualizado = await Balizas.update(
+      { tracker: 0 },
+      {
+        where: {
+          id: { [Op.startsWith]: confirm },
+          tracker: track,
+        },
+      }
+    );
+    return actualizado;
   } catch (error) {
-    throw new Error(`Error fetching records: ${error.message}`);
+    console.error("Error al actualizar la baliza:", error);
   }
-};
+}
+
+async function guardarBaliza(via, track) {
+  const result = await Balizas.update(
+    { tracker: track },
+    {
+      where: {
+        id: via,
+      },
+    }
+  )
+    .then(() => {
+      console.log("Baliza actualizada correctamente.");
+    })
+    .catch((error) => {
+      console.error("Error al actualizar la baliza:", error);
+    });
+}
