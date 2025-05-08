@@ -21,11 +21,11 @@ const Balizas = sequelize.define(
       allowNull: true,
     },
     via: {
-      type: DataTypes.STRING(3),
+      type: DataTypes.STRING(10),
       allowNull: true,
     },
-    activo: {
-      type: DataTypes.STRING(20),
+    tracker: {
+      type: DataTypes.STRING(10),
       allowNull: true,
     },
   },

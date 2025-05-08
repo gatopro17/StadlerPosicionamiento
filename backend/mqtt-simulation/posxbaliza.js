@@ -1,6 +1,7 @@
 const connectMQTT = require("./Transbordador-simulation/utils/mqttClient.js");
 const Transbordadores = require("../models/Transbordadores.js");
 const Agujas = require("../models/Agujas.js");
+const Balizas = require("../models/Balizas.js");
 const sequelize = require("../config/database.js");
 const { Sequelize } = require("sequelize");
 const { Op } = require("sequelize");
@@ -26,8 +27,10 @@ async function posxBaliza(data) {
 
   // Tomar nombre de baliza más potente
   let via = balizas[0].name.toString().slice(0, 3);
+  let restoVia = balizas[0].name.toString().slice(3, 11);
   if (via === "TRA") {
     via = balizas[0].name.toString().slice(0, 4);
+    restoVia = balizas[0].name.toString().slice(4, 11);
   }
 
   const track = balizas[0].tracker;
@@ -98,6 +101,22 @@ async function posxBaliza(data) {
 
   // Guardar el valor en Baliza
   console.log(via);
+  const viaGuardar = via + restoVia;
+  console.log(viaGuardar);
+  Balizas.update(
+    { tracker: track },
+    {
+      where: {
+        id: viaGuardar,
+      },
+    }
+  )
+    .then(() => {
+      console.log("Baliza actualizada correctamente.");
+    })
+    .catch((error) => {
+      console.error("Error al actualizar la baliza:", error);
+    });
 
   return via;
 }
