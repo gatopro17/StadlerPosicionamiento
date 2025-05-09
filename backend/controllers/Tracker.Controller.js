@@ -4,11 +4,11 @@ const {
   findAllController,
   findByIdController,
   updateController,
-  deleteController
-} = require('./Base.Controller');
+  deleteController,
+} = require("./Base.Controller");
 
-const TrackerService = require('../services/Tracker.Service');
-const { encontrarPosicionTracker } = require('../utils/posicionTracker');
+const TrackerService = require("../services/Tracker.Service");
+const { encontrarPosicionTracker } = require("../utils/posicionTracker");
 
 // --- Controladores CRUD básicos reutilizando Base.Controller ---
 const create = createController(TrackerService.create);
@@ -32,43 +32,42 @@ const remove = deleteController(TrackerService.remove);
 async function manejarMensajeTracker(message) {
   try {
     const trackerData = message;
-   
-    const {  trackerId, balizasCercanas } = trackerData;
 
-   if (!trackerId) {
-    throw new Error('El trackerId no está definido en el mensaje.');
-  }
+    const { trackerId, balizasCercanas } = trackerData;
+
+    if (!trackerId) {
+      throw new Error("El trackerId no está definido en el mensaje.");
+    }
 
     // Calculamos la posición del tracker usando las balizas cercanas (ya ordenadas por intensidad)
     const posicion = await encontrarPosicionTracker(balizasCercanas);
-     //console.log('📍 Posición encontrada:', posicion);
+    //console.log('📍 Posición encontrada:', posicion);
 
-    // Verificamos si la posición es válida   
-    if (!posicion || typeof posicion !== 'object') {
-      throw new Error('La posición no es válida o no fue encontrada.');
+    // Verificamos si la posición es válida
+    if (!posicion || typeof posicion !== "object") {
+      throw new Error("La posición no es válida o no fue encontrada.");
     }
     // Incluimos el trackerId en el objeto posición
     posicion.trackerId = trackerId;
     // La baliza más cercana es la primera de la lista después de que se haya ordenado
-    const balizaMasCercana = balizasCercanas.find(baliza => 
-      baliza.mayor === posicion.mayor && baliza.minor === posicion.minor
+    const balizaMasCercana = balizasCercanas.find(
+      (baliza) => baliza.via === posicion.via && baliza.minor === posicion.minor
     );
 
     if (!balizaMasCercana) {
-      throw new Error('No se pudo determinar la baliza más cercana.');
+      throw new Error("No se pudo determinar la baliza más cercana.");
     }
 
     // Imprimimos la baliza más cercana al tracker
-    console.log('Baliza más cercana al tracker:', balizaMasCercana);
+    console.log("Baliza más cercana al tracker:", balizaMasCercana);
 
     // Actualizamos la posición del tracker en la base de datos
-    await TrackerService.actualizarPosicionDesdeMQTT( posicion);
+    await TrackerService.actualizarPosicionDesdeMQTT(posicion);
 
     // Retornamos la posición si se necesita hacer algo más
     return posicion;
-
   } catch (error) {
-    console.error('❌ Error al procesar el mensaje del tracker:', error);
+    console.error("❌ Error al procesar el mensaje del tracker:", error);
   }
 }
 
@@ -79,5 +78,5 @@ module.exports = {
   findById,
   update,
   remove,
-  manejarMensajeTracker 
+  manejarMensajeTracker,
 };

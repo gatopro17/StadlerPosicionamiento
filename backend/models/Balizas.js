@@ -21,11 +21,19 @@ const Balizas = sequelize.define(
       allowNull: true,
     },
     via: {
+<<<<<<< Updated upstream
       type: DataTypes.STRING(10),
       allowNull: true,
     },
     tracker: {
       type: DataTypes.STRING(10),
+=======
+      type: DataTypes.STRING(3),
+      allowNull: true,
+    },
+    tracker: {
+      type: DataTypes.INTEGER,
+>>>>>>> Stashed changes
       allowNull: true,
     },
   },

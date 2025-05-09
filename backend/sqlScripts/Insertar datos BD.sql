@@ -210,6 +210,7 @@ INSERT INTO Balizas (id, nombre, BalizaID, Tipo, Via, Mayor) VALUES
 ('TRA3_06', 'Baliza Transbordador TRA3 Pos6', NULL, 'Transbordador', 'TRA3', NULL),
 ('TRA3_07', 'Baliza Transbordador TRA3 Pos7', NULL, 'Transbordador', 'TRA3', NULL),
 ('TRA3_08', 'Baliza Transbordador TRA3 Pos8', NULL, 'Transbordador', 'TRA3', NULL),
+('TRC1_01', 'Baliza Transbordador TRC1', NULL, 'Transbordador', 'TRC1', NULL),
 ('CO1_01', 'Baliza Via CO1 Pos1', NULL, 'Via', 'CO1', NULL),
 ('CO1_02', 'Baliza Via CO1 Pos2', NULL, 'Via', 'CO1', NULL),
 ('CO1_03', 'Baliza Via CO1 Pos3', NULL, 'Via', 'CO1', NULL),

@@ -5,37 +5,7 @@ const getRandomIntensity = require("./randomIntensity");
 // La cabecera tiene una posición fija (minor = 1) y un identificador basado en el número de rails.
 rail = Math.floor(Math.random() * 7) + 1;
 
-function generateCabeceraBeacon() {
-  const rail = Math.floor(Math.random() * 7) + 1;
-
-  const balizas = {
-    cabecera1: {
-      id: `C${rail}C1`,
-      intensidad: getRandomIntensity(),
-    },
-    cabecera2: {
-      id: `C${rail}C2`,
-      intensidad: getRandomIntensity(),
-    },
-    extra1: {
-      id: `C${rail}_01`,
-      intensidad: getRandomIntensity(),
-    },
-    extra2: {
-      id: `C${rail}_02`,
-      intensidad: getRandomIntensity(),
-    },
-  };
-
-  if (rail === 1 || rail === 2) {
-    balizas.coupled = {
-      id: `TTRC1`,
-      intensidad: getRandomIntensity(),
-    };
-  }
-
-  return balizas;
-}
+function generateCabeceraBeacon() {}
 
 function generateAcopladoBeacon() {
   let rail = Math.floor(Math.random() * 7) + 1;
@@ -48,26 +18,26 @@ function generateAcopladoBeacon() {
 
   const balizas = {
     cabecera1: {
-      id: `C${rail}C1`,
+      id: `C0${rail}C1`,
       intensidad: getRandomIntensity(),
     },
     cabecera2: {
-      id: `C${rail}C2`,
+      id: `C0${rail}C2`,
       intensidad: getRandomIntensity(),
     },
     extra1: {
-      id: `C${rail}_01`,
+      id: `C0${rail}_01`,
       intensidad: getRandomIntensity(),
     },
     extra2: {
-      id: `C${rail}_02`,
+      id: `C0${rail}_02`,
       intensidad: getRandomIntensity(),
     },
   };
 
   if (rail === 1 || rail === 2) {
     balizas.coupled = {
-      id: `TTRA${traRandom}`,
+      id: `TRC1_01`,
       intensidad: getRandomIntensity(),
     };
   }
@@ -88,7 +58,7 @@ const generateTransbordadorBeacon = (id) => {
       id: `G${i + 1}`, // ID de la baliza, como G1, G2, ..., G6.
       nombre: `Baliza G${i + 1}`, // Nombre de la baliza, como "Baliza G1", "Baliza G2", etc.
       trackerID: prefix, // ID del tracker (transbordador), por ejemplo: T-1.
-      mayor: 100 + id, // Número mayor (rails) asociado con el transbordador.
+      via: 100 + id, // Número mayor (rails) asociado con el transbordador.
       minor: i + 1, // Número minor, representando la posición de la baliza en el transbordador (de 1 a 6).
     }));
   } else if (id === 3) {
@@ -98,7 +68,7 @@ const generateTransbordadorBeacon = (id) => {
         id: "P1", // ID de la baliza, solo P1.
         nombre: "Baliza P1", // Nombre de la baliza "Baliza P1".
         trackerID: prefix, // ID del tracker (transbordador), por ejemplo: T-3.
-        mayor: 100 + id, // Número mayor (rails) asociado con el transbordador.
+        via: 100 + id, // Número mayor (rails) asociado con el transbordador.
         minor: 1, // Número minor, siempre 1 en el caso de un transbordador pequeño.
       },
     ];

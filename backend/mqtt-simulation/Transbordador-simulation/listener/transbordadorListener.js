@@ -5,6 +5,7 @@ require("dotenv").config({
 //importar los servicios
 const BalizasService = require("../../../services/Balizas.Service");
 const TrackerService = require("../../../services/Tracker.Service");
+const TransbordadoresService = require("../../../services/Transbordadores.Service");
 
 // Importa la función que gestiona la conexión MQTT desde un archivo utilitario
 const connectMQTT = require("../utils/mqttClient");
@@ -20,37 +21,86 @@ client.on("connect", () => {
   client.subscribe("position/transbordador");
 });
 // Evento que se ejecuta cuando se recibe un mensaje en el tema suscrito
+const cooldowns = new Map(); // Mapa para controlar los intervalos mínimos
+const MIN_INTERVAL_MS = 1000; // mínimo 1 segundo entre mensajes del mismo tracker
 client.on("message", async (topic, message) => {
   // Convierte el mensaje recibido (buffer) en un objeto JSON
   const data = JSON.parse(message.toString());
   // para manejar los transbordadores y su posicion.
+  if (!data.trackerID || !Array.isArray(data.beacons)) return;
 
+  const now = Date.now();
+  const lastProcessed = cooldowns.get(data.trackerID) || 0;
+
+  if (now - lastProcessed < MIN_INTERVAL_MS) {
+    // Ignora este mensaje por llegar demasiado pronto
+    return;
+  }
+  let acoplada = false;
+  cooldowns.set(data.trackerID, now);
   //sacar las dos mayores intensidades de las que sean cabecera
-  if (Array.isArray(data)) {
-    const balizasPlanas = Object.values(data[0]);
+  if (data.trackerID && Array.isArray(data.beacons)) {
+    const balizasPlanas = Object.values(data.beacons[0]);
 
     const enrichedData = await Promise.all(
       balizasPlanas.map(async (baliza) => {
         try {
-          if (baliza.id === "TTRC1") {
+          if (baliza.id.startsWith("TRC1")) {
+            acoplada = true;
             console.log("🔍 Buscando tracker con ID:", baliza.id);
-            const dbBaliza = await TrackerService.findById(baliza.id);
+            const dbBaliza = await BalizasService.findById(baliza.id);
             console.log(
-              "🧲Transbordador acoplado con el transbordador con tracker:",
-              baliza.id
+              "🧲Transbordador ",
+              data.trackerID,
+              " acoplado con el transbordador TRC1"
             );
+            // Actualiza la tabla de transbordadores
+            updateData = {
+              acoplado: "TRC1",
+            };
+            updateDataTRC1 = {
+              acoplado: data.trackerID,
+            };
+            try {
+              await TransbordadoresService.update(data.trackerID, updateData);
+              await TransbordadoresService.update("TRC1", updateDataTRC1);
+              console.log(
+                "Transbordadores actualizados:",
+                data.trackerID,
+                "TRC1"
+              );
+            } catch (error) {
+              console.error("Error actualizando el transbordador:", error);
+            }
+            const transbordadores = ["TRA1", "TRA2", "TRA3"];
+            transbordadores.forEach((transbordador) => {
+              if (transbordador !== data.trackerID) {
+                updateData2 = {
+                  acoplado: null,
+                };
+                try {
+                  TransbordadoresService.update(transbordador, updateData2);
+                  console.log(
+                    "Borrando couples del Transbordador",
+                    transbordador
+                  );
+                } catch (error) {
+                  console.error(
+                    "Error Borrando couples del Transbordador",
+                    transbordador
+                  );
+                }
+              }
+            });
+
             return {
               ...baliza,
               tipo: dbBaliza?.tipo || "desconocido",
             };
-          } else if (baliza.id.startsWith("TTRA")) {
-            console.log("🔍 Buscando tracker con ID:", baliza.id);
-            const dbBaliza = await TrackerService.findById(baliza.id);
-            return {
-              ...baliza,
-              tipo: dbBaliza?.tipo || "desconocido",
-            };
-          } else {
+          } else if (
+            !baliza.id.startsWith("TRA") &&
+            !baliza.id.startsWith("TRC1")
+          ) {
             console.log("🔍 Buscando baliza con ID:", baliza.id);
             const dbBaliza = await BalizasService.findById(baliza.id);
             return {
@@ -72,7 +122,10 @@ client.on("message", async (topic, message) => {
     // Elimina las que fallaron (null)
     const filteredData = enrichedData.filter(Boolean);
     // Ahora `enrichedData` contiene todas las balizas con el campo `tipo`
-    console.log("DATA COMPLETAAAAA", JSON.stringify(filteredData, null, 2));
+    console.log(
+      "DATA COMPLETAAAAA de lo que recibe el transbordador " + data.trackerID,
+      JSON.stringify(filteredData, null, 2)
+    );
 
     // filtrar cabeceras y sacar las dos con mayor intensidad
     const cabeceras = filteredData.filter((b) => b.tipo === "Cabecera");
@@ -85,7 +138,34 @@ client.on("message", async (topic, message) => {
     } else {
       console.log("🚂 Transbordador en la vía:", topCabeceras[0].via);
     }
-
-    processor.processMessage(data);
+    updateData4 = {
+      via: topCabeceras[0].via,
+    };
+    try {
+      await TransbordadoresService.update(data.trackerID, updateData4);
+      console.log("Via del Transbordador actualizado:", data.trackerID);
+    } catch (error) {
+      console.error("Error actualizando el transbordador:", error);
+    }
+    if (!acoplada) {
+      updateData3 = {
+        acoplado: null,
+      };
+      try {
+        await TransbordadoresService.update("TRC1", updateData3);
+        console.log("Borrando columna acoplado del transbordador:", "TRC1");
+      } catch (error) {
+        console.error("Error actualizando el transbordador:", error);
+      }
+    } else {
+      updateData3 = {
+        via: topCabeceras[0].via,
+      };
+      await TransbordadoresService.update("TRC1", updateData3);
+      console.log(
+        "Via del transbordador TRC1 actualizado a:",
+        topCabeceras[0].via
+      );
+    }
   }
 });
