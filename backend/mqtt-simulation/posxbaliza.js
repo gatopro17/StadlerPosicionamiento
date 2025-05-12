@@ -25,26 +25,22 @@ async function posxBaliza(data) {
   const balizas = data;
   balizas.sort((a, b) => a.max - b.max);
 
-  // Tomar via de baliza más potente
-  let via = balizas[0].name.toString().slice(0, 3);
-  let restoVia = balizas[0].name.toString().slice(3, 11);
-  if (via === "TRA") {
-    via = balizas[0].name.toString().slice(0, 4);
-    restoVia = balizas[0].name.toString().slice(4, 11);
-  }
+  // Pasar balizas a vias
+  let vias = balizaVia(balizas);
 
-  // Tomar el tracker de la baliza más potente.
+  // Tomar el tracker de la baliza.
   const track = balizas[0].tracker;
 
   console.log("Track: " + track);
-  console.log("Baliza más potente: " + via);
+  console.log("Baliza más potente: " + vias[0]);
 
-  let confirm = "Desconocida";
-  switch (via) {
+  let testVia = "";
+  switch (vias[0]) {
     case "C14":
     case "C13":
       // Viene de E2
-      confirm = await c13c14();
+      await quitarTracker(track);
+      testVia = await c13c14();
       break;
 
     case "C12":
@@ -52,8 +48,9 @@ async function posxBaliza(data) {
     case "C10":
     case "C09":
     case "C08":
-      // Viene de E1
-      confirm = await c8c12();
+      // Viene de E1L
+      await quitarTracker(track);
+      testVia = await c8c12();
       break;
 
     case "C07":
@@ -65,7 +62,8 @@ async function posxBaliza(data) {
     case "C01":
       // Viene de TRA1-TRA3
       try {
-        confirm = await transbordador(via);
+        await quitarTracker(track);
+        testVia = await transbordador(vias);
       } catch (error) {
         console.error("Error en la función transbordador:", error.message); // Salir de la función si hay un error
         return;
@@ -74,35 +72,22 @@ async function posxBaliza(data) {
 
     case "E1C":
       // Puede venir de E1L o TRA1-TRA3.
+      await quitarTracker(track);
+      testVia = await transbordador(vias);
       break;
     case "E1L":
       // Puede venir de GPS o C08-C12.
-      confirm = await c08c12();
-      const balizasBus = await quitarTracker(confirm, track);
-      console.log(balizasBus);
-      if (balizasBus === 0) {
-        // No viene de C08-C12
-        confirm = via;
-      } else {
-        // Viene de C08-C12
-        confirm = via;
-      }
+      await quitarTracker(track);
+      testVia = await c08c12();
       break;
     case "E2C":
       // Puede venir de E2L o TRA1-TRA3.
       break;
     case "E2L":
       // Viene de GPS o C13-C14.
-      confirm = await c13c14();
-      const balizasBuscar = await quitarTracker(confirm, track);
-      console.log(balizasBuscar);
-      if (balizasBuscar === 0) {
-        // No viene de C13-C14
-        confirm = via;
-      } else {
-        // Viene de C13-C14
-        confirm = via;
-      }
+      quitarTracker(track);
+      testVia = await c13c14();
+      const balizasBuscar = await quitarTracker(track);
       break;
 
     case "CO1":
@@ -119,21 +104,16 @@ async function posxBaliza(data) {
       break;
 
     default:
-      console.log("No hay baliza activa en la ruta.");
+      console.log("No se ha detectado baliza valida.");
   }
-
-  if (via !== confirm) {
-    via = confirm;
-  }
+  console.log(await buscarTracker(track));
 
   // Guardar el valor en Baliza
-  const viaGuardar = via + restoVia;
-  console.log("Guardar en Baliza: " + viaGuardar);
-
+  const viaGuardar = restoBaliza(vias, balizas, testVia);
   guardarBaliza(viaGuardar, track);
 }
 
-async function transbordador(via) {
+async function transbordador(vias) {
   //Leer todos los Transbordadores de la BBDD
   const trans = await Transbordadores.findAll({
     where: {
@@ -158,27 +138,26 @@ async function transbordador(via) {
 
   // Si está en la vía correcta, devolver via.
   if (
-    via ===
+    vias[0] ===
     (trans[0].dataValues.via ||
       trans[1].dataValues.via ||
       trans[2].dataValues.via)
   ) {
-    return via;
-  } else {
-    // Si no está en la via correcta, comprobar si esta en la anterior o posterior.
-    const via1 = [];
-    via1[0] = parseInt(trans[0].dataValues.via.slice(1, 3));
-    via1[1] = parseInt(trans[1].dataValues.via.slice(1, 3));
-    via1[2] = parseInt(trans[2].dataValues.via.slice(1, 3));
-    const trans1 = parseInt(via.slice(1, 3)) + 1;
-    const trans2 = parseInt(via.slice(1, 3)) - 1;
-    for (let i = 0; i <= 2; i++) {
-      if (via1[i] == trans1 || via1[i] == trans2) {
-        return trans[i].dataValues.via;
-      }
-    }
-    throw new Error("Transbordador demasiado lejos.");
+    return vias[0];
   }
+
+  // Si no está en la via correcta, comprobar si esta en alguna baliza.
+  if (vias.has(trans[0].dataValues.via)) {
+    return trans[0].dataValues.via;
+  }
+  if (vias.has(trans[1].dataValues.via)) {
+    return trans[1].dataValues.via;
+  }
+  if (vias.has(trans[2].dataValues.via)) {
+    trans[2].dataValues.via;
+  }
+
+  throw new Error("No se ha enconstrado via correcta");
 }
 
 async function c8c12() {
@@ -226,18 +205,32 @@ async function c13c14() {
   }
 }
 
-async function quitarTracker(confirm, track) {
+async function quitarTracker(track) {
   try {
-    actualizado = await Balizas.update(
+    const actualizado = await Balizas.update(
       { tracker: 0 },
       {
         where: {
-          id: { [Op.startsWith]: confirm },
+          //id: { [Op.startsWith]: confirm },
           tracker: track,
         },
       }
     );
     return actualizado;
+  } catch (error) {
+    console.error("Error al actualizar la baliza:", error);
+  }
+}
+
+async function buscarTracker(track) {
+  try {
+    const actualizado = await Balizas.findOne({
+      where: {
+        tracker: track,
+      },
+    });
+    console.log("Baliza encontrada: " + actualizado);
+    return actualizado.dataValues;
   } catch (error) {
     console.error("Error al actualizar la baliza:", error);
   }
@@ -258,4 +251,38 @@ async function guardarBaliza(via, track) {
     .catch((error) => {
       console.error("Error al actualizar la baliza:", error);
     });
+}
+
+function balizaVia(balizas) {
+  let caracteres = 3;
+  // Tomar via de baliza más potente
+  const viaMuestra = balizas[0].name.toString().slice(0, caracteres);
+
+  if (viaMuestra === "TRA") {
+    caracteres = 4;
+  }
+
+  let vias = new Set();
+  for (let i = 0; i < balizas.length; i++) {
+    vias.add(balizas[i].name.toString().slice(0, caracteres));
+  }
+
+  return vias;
+}
+
+function restoBaliza(vias, balizas, testVia) {
+  let viaGuardar = "";
+  if (testVia !== vias[0]) {
+    if (vias.has(testVia)) {
+      viaGuardar = balizas.find((element) => element.name.startsWith(testVia));
+    } else {
+      const lon = viaGuardar.length;
+      viaGuardar = testVia + balizas[0].name.slice(lon, 11);
+    }
+  } else {
+    viaGuardar = balizas[0].name;
+  }
+
+  console.log("Guardar en Baliza: " + viaGuardar);
+  return viaGuardar;
 }
