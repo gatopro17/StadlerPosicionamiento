@@ -35,7 +35,7 @@ Transbordadores.belongsTo(Trackers, {
 
 // --- Asociación: transbordadores.via -> vias.id
 Transbordadores.belongsTo(Vias, {
-  foreignKey: "via",
+  foreignKey: "via1",
   as: "Via",
   onUpdate: "CASCADE",
   onDelete: "CASCADE",
@@ -43,7 +43,7 @@ Transbordadores.belongsTo(Vias, {
 
 // --- Asociación: balizas.via -> vias.id
 Balizas.belongsTo(Vias, {
-  foreignKey: "via",
+  foreignKey: "via1",
   as: "Via",
   onUpdate: "CASCADE",
   onDelete: "CASCADE",
@@ -51,7 +51,7 @@ Balizas.belongsTo(Vias, {
 
 // Asociaciones entre Rails y Balizas
 Vias.hasMany(Balizas, {
-  foreignKey: "via", // campo en Balizas que apunta a Vias.id
+  foreignKey: "via1", // campo en Balizas que apunta a Vias.id
   sourceKey: "id",
   as: "balizas",
 });

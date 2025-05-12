@@ -48,7 +48,6 @@ client.on("message", async (topic, message) => {
           if (baliza.id.startsWith("TRC1")) {
             acoplada = true;
             console.log("🔍 Buscando tracker con ID:", baliza.id);
-            console.log(await BalizasService.describe());
             const dbBaliza = await BalizasService.findById(baliza.id);
             console.log(
               "🧲Transbordador ",
@@ -65,26 +64,6 @@ client.on("message", async (topic, message) => {
             } catch (error) {
               console.error("Error actualizando el transbordador:", error);
             }
-            const transbordadores = ["TRA1", "TRA2", "TRA3"];
-            transbordadores.forEach((transbordador) => {
-              if (transbordador !== data.trackerID) {
-                updateData2 = {
-                  acoplado: null,
-                };
-                try {
-                  TransbordadoresService.update(transbordador, updateData2);
-                  console.log(
-                    "Borrando couples del Transbordador",
-                    transbordador
-                  );
-                } catch (error) {
-                  console.error(
-                    "Error Borrando couples del Transbordador",
-                    transbordador
-                  );
-                }
-              }
-            });
 
             return {
               ...baliza,
