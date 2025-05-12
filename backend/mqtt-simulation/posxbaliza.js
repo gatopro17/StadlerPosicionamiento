@@ -39,8 +39,9 @@ async function posxBaliza(data) {
     case "C14":
     case "C13":
       // Viene de E2
-      await quitarTracker(track);
+      misma = mismavia(vias, track);
       testVia = await c13c14();
+      await quitarTracker(track);
       break;
 
     case "C12":
@@ -285,4 +286,18 @@ function restoBaliza(vias, balizas, testVia) {
 
   console.log("Guardar en Baliza: " + viaGuardar);
   return viaGuardar;
+}
+
+async function mismavia(via, track) {
+  try {
+    const viaActual = await Balizas.findOne({
+      where: {
+        via_actual: { [Op.startsWith]: via[0] },
+        tracker: track,
+      },
+    });
+    return viaActual.dataValues;
+  } catch (error) {
+    console.error("Error al actualizar el activo:", error);
+  }
 }
