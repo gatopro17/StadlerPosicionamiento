@@ -5,11 +5,7 @@ const Transbordadores = sequelize.define(
   "Transbordadores",
   {
     id: {
-<<<<<<< Updated upstream
       type: DataTypes.STRING(10),
-=======
-      type: DataTypes.STRING(4),
->>>>>>> Stashed changes
       primaryKey: true,
     },
     nombre: {
@@ -17,19 +13,11 @@ const Transbordadores = sequelize.define(
       allowNull: true,
     },
     acoplado: {
-<<<<<<< Updated upstream
       type: DataTypes.STRING(10),
       allowNull: true,
     },
     tracker: {
       type: DataTypes.STRING(10),
-=======
-      type: DataTypes.STRING(4),
-      allowNull: true,
-    },
-    tracker: {
-      type: DataTypes.STRING(5),
->>>>>>> Stashed changes
       allowNull: true,
     },
     tipo: {
@@ -37,11 +25,7 @@ const Transbordadores = sequelize.define(
       allowNull: true,
     },
     via: {
-<<<<<<< Updated upstream
       type: DataTypes.STRING(10),
-=======
-      type: DataTypes.STRING(3),
->>>>>>> Stashed changes
       allowNull: true,
     },
   },

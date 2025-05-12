@@ -237,23 +237,6 @@ async function buscarTracker(track) {
   }
 }
 
-async function guardarBaliza(via, track) {
-  const result = await Balizas.update(
-    { tracker: track },
-    {
-      where: {
-        id: via,
-      },
-    }
-  )
-    .then(() => {
-      console.log("Baliza actualizada correctamente.");
-    })
-    .catch((error) => {
-      console.error("Error al actualizar la baliza:", error);
-    });
-}
-
 function balizaVia(balizas) {
   let caracteres = 3;
   // Tomar via de baliza más potente
@@ -300,4 +283,21 @@ async function mismavia(via, track) {
   } catch (error) {
     console.error("Error al actualizar el activo:", error);
   }
+}
+
+async function guardarBaliza(via, track) {
+  const result = await Balizas.update(
+    { tracker: track },
+    {
+      where: {
+        id: via,
+      },
+    }
+  )
+    .then(() => {
+      console.log("Baliza actualizada correctamente.");
+    })
+    .catch((error) => {
+      console.error("Error al actualizar la baliza:", error);
+    });
 }
