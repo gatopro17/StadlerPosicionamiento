@@ -2,6 +2,7 @@ const connectMQTT = require("./Transbordador-simulation/utils/mqttClient.js");
 const Transbordadores = require("../models/Transbordadores.js");
 const Agujas = require("../models/Agujas.js");
 const Balizas = require("../models/Balizas.js");
+const Activo = require("../models/Activo.js");
 const sequelize = require("../config/database.js");
 const { Sequelize } = require("sequelize");
 const { Op } = require("sequelize");
@@ -39,9 +40,14 @@ async function posxBaliza(data) {
     case "C14":
     case "C13":
       // Viene de E2
-      misma = mismavia(vias, track);
-      testVia = await c13c14();
-      await quitarTracker(track);
+      const misma = mismavia(vias, track);
+      if (misma) {
+        console.log("La baliza ya está en la misma vía.");
+        ponerVia();
+      } else {
+        testVia = await c13c14();
+        await quitarTracker(track);
+      }
       break;
 
     case "C12":
@@ -50,8 +56,8 @@ async function posxBaliza(data) {
     case "C09":
     case "C08":
       // Viene de E1L
-      await quitarTracker(track);
       testVia = await c8c12();
+      await quitarTracker(track);
       break;
 
     case "C07":
@@ -61,10 +67,12 @@ async function posxBaliza(data) {
     case "C03":
     case "C02":
     case "C01":
+    case "CO2":
+    case "CO3":
       // Viene de TRA1-TRA3
       try {
-        await quitarTracker(track);
         testVia = await transbordador(vias);
+        await quitarTracker(track);
       } catch (error) {
         console.error("Error en la función transbordador:", error.message); // Salir de la función si hay un error
         return;
@@ -73,27 +81,18 @@ async function posxBaliza(data) {
 
     case "E1C":
       // Puede venir de E1L o TRA1-TRA3.
-      await quitarTracker(track);
-      testVia = await transbordador(vias);
       break;
     case "E1L":
       // Puede venir de GPS o C08-C12.
-      await quitarTracker(track);
-      testVia = await c08c12();
       break;
     case "E2C":
       // Puede venir de E2L o TRA1-TRA3.
       break;
     case "E2L":
       // Viene de GPS o C13-C14.
-      quitarTracker(track);
-      testVia = await c13c14();
-      const balizasBuscar = await quitarTracker(track);
       break;
 
     case "CO1":
-    case "CO2":
-    case "CO3":
     case "CO4":
       // Puede venir de TRA1-TRA3.
       break;
@@ -115,6 +114,7 @@ async function posxBaliza(data) {
 }
 
 async function transbordador(vias) {
+  // Revisar
   //Leer todos los Transbordadores de la BBDD
   const trans = await Transbordadores.findAll({
     where: {
@@ -207,6 +207,7 @@ async function c13c14() {
 }
 
 async function quitarTracker(track) {
+  // Revisar
   try {
     const actualizado = await Balizas.update(
       { tracker: 0 },
@@ -223,45 +224,29 @@ async function quitarTracker(track) {
   }
 }
 
-async function buscarTracker(track) {
-  try {
-    const actualizado = await Balizas.findOne({
-      where: {
-        tracker: track,
-      },
-    });
-    console.log("Baliza encontrada: " + actualizado);
-    return actualizado.dataValues;
-  } catch (error) {
-    console.error("Error al actualizar la baliza:", error);
-  }
-}
-
-function balizaVia(balizas) {
-  let caracteres = 3;
-  // Tomar via de baliza más potente
-  const viaMuestra = balizas[0].name.toString().slice(0, caracteres);
-
-  if (viaMuestra === "TRA") {
-    caracteres = 4;
-  }
-
+async function balizaVia(balizas) {
   let vias = new Set();
   for (let i = 0; i < balizas.length; i++) {
-    vias.add(balizas[i].name.toString().slice(0, caracteres));
+    const viaBaliza = await Balizas.findOne({
+      where: {
+        id: balizas[0].name,
+      },
+    });
+    vias.add(viaBaliza.dataValues.via1);
   }
 
   return vias;
 }
 
 function restoBaliza(vias, balizas, testVia) {
+  // Revisar
   let viaGuardar = "";
   if (testVia !== vias[0]) {
     if (vias.has(testVia)) {
       viaGuardar = balizas.find((element) => element.name.startsWith(testVia));
     } else {
-      const lon = viaGuardar.length;
-      viaGuardar = testVia + balizas[0].name.slice(lon, 11);
+      const long = viaGuardar.length;
+      viaGuardar = testVia + balizas[0].name.slice(long, 11);
     }
   } else {
     viaGuardar = balizas[0].name;
@@ -273,31 +258,53 @@ function restoBaliza(vias, balizas, testVia) {
 
 async function mismavia(via, track) {
   try {
-    const viaActual = await Balizas.findOne({
+    const viaActual = await Activo.findOne({
       where: {
         via_actual: { [Op.startsWith]: via[0] },
         tracker: track,
       },
     });
-    return viaActual.dataValues;
+    if (!viaActual) {
+      return false;
+    }
+    return true;
   } catch (error) {
     console.error("Error al actualizar el activo:", error);
   }
 }
 
-async function guardarBaliza(via, track) {
-  const result = await Balizas.update(
-    { tracker: track },
+async function actualizaActivo(via, baliza, posible_via, posible_via2, track) {
+  const result = await Activo.update(
+    {
+      via_actual: via,
+      balija_actual: via,
+      posible_via: via,
+      posible_via2: via,
+    },
     {
       where: {
-        id: via,
+        tracker: track,
       },
     }
   )
     .then(() => {
-      console.log("Baliza actualizada correctamente.");
+      console.log("Activo actualizado correctamente.");
     })
     .catch((error) => {
-      console.error("Error al actualizar la baliza:", error);
+      console.error("Error al actualizar Activo:", error);
     });
+}
+
+async function buscarTrackerActivo(track) {
+  try {
+    const activo = await Activo.findOne({
+      where: {
+        tracker: track,
+      },
+    });
+    console.log("Activo encontrado: " + activo);
+    return activo.dataValues;
+  } catch (error) {
+    console.error("Error en busqueda Activo:", error);
+  }
 }

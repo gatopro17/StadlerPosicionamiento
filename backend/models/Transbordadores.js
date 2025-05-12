@@ -24,8 +24,20 @@ const Transbordadores = sequelize.define(
       type: DataTypes.STRING(20),
       allowNull: true,
     },
-    via: {
+    via1: {
       type: DataTypes.STRING(10),
+      allowNull: true,
+    },
+    via2: {
+      type: DataTypes.STRING(10),
+      allowNull: true,
+    },
+    balizaVirtual: {
+      type: DataTypes.STRING(10),
+      allowNull: true,
+    },
+    timeStamp: {
+      type: DataTypes.DATE,
       allowNull: true,
     },
   },

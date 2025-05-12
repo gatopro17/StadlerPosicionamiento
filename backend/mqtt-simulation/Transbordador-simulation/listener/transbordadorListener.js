@@ -48,6 +48,7 @@ client.on("message", async (topic, message) => {
           if (baliza.id.startsWith("TRC1")) {
             acoplada = true;
             console.log("🔍 Buscando tracker con ID:", baliza.id);
+            console.log(await BalizasService.describe());
             const dbBaliza = await BalizasService.findById(baliza.id);
             console.log(
               "🧲Transbordador ",
@@ -55,20 +56,12 @@ client.on("message", async (topic, message) => {
               " acoplado con el transbordador TRC1"
             );
             // Actualiza la tabla de transbordadores
-            updateData = {
-              acoplado: "TRC1",
-            };
             updateDataTRC1 = {
               acoplado: data.trackerID,
             };
             try {
-              await TransbordadoresService.update(data.trackerID, updateData);
               await TransbordadoresService.update("TRC1", updateDataTRC1);
-              console.log(
-                "Transbordadores actualizados:",
-                data.trackerID,
-                "TRC1"
-              );
+              console.log("Transbordadores actualizados: TRC1");
             } catch (error) {
               console.error("Error actualizando el transbordador:", error);
             }
@@ -106,7 +99,8 @@ client.on("message", async (topic, message) => {
             return {
               ...baliza,
               tipo: dbBaliza?.tipo || "desconocido",
-              via: dbBaliza?.via || "desconocida",
+              via1: dbBaliza?.via1 || 0,
+              via2: dbBaliza?.via2 || 0,
             };
           }
         } catch (error) {
@@ -133,17 +127,24 @@ client.on("message", async (topic, message) => {
       .sort((a, b) => b.intensidad - a.intensidad)
       .slice(0, 2);
     //si las dos cabeceras tienen la misma via, se muestra la via por consola, si no, se muestra la que mayor intensidad tiene
-    if (topCabeceras[0].via === topCabeceras[1].via) {
-      console.log("🚂 Transbordador en la vía:", topCabeceras[0].via);
+    if (topCabeceras[0].via2 != 0) {
+      console.log(
+        "🚂 Transbordador en la vía:",
+        topCabeceras[0].via1,
+        " o en la via: ",
+        topCabeceras[0].via2
+      );
     } else {
-      console.log("🚂 Transbordador en la vía:", topCabeceras[0].via);
+      console.log("🚂 Transbordador en la vía:", topCabeceras[0].via1);
     }
     updateData4 = {
-      via: topCabeceras[0].via,
+      via1: topCabeceras[0].via1,
+      via2: topCabeceras[0].via2,
+      timeStamp: Date.now(),
     };
     try {
       await TransbordadoresService.update(data.trackerID, updateData4);
-      console.log("Via del Transbordador actualizado:", data.trackerID);
+      console.log("Vias del Transbordador actualizadas:", data.trackerID);
     } catch (error) {
       console.error("Error actualizando el transbordador:", error);
     }
@@ -159,12 +160,16 @@ client.on("message", async (topic, message) => {
       }
     } else {
       updateData3 = {
-        via: topCabeceras[0].via,
+        via1: topCabeceras[0].via1,
+        via2: topCabeceras[0].via2,
+        timeStamp: Date.now(),
       };
       await TransbordadoresService.update("TRC1", updateData3);
       console.log(
-        "Via del transbordador TRC1 actualizado a:",
-        topCabeceras[0].via
+        "Vias del transbordador TRC1 actualizadas a:",
+        topCabeceras[0].via1,
+        " o en la via: ",
+        topCabeceras[0].via2
       );
     }
   }

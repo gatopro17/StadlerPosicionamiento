@@ -20,11 +20,11 @@ const Balizas = sequelize.define(
       type: DataTypes.STRING(20),
       allowNull: true,
     },
-    via: {
+    via1: {
       type: DataTypes.STRING(10),
       allowNull: true,
     },
-    tracker: {
+    via2: {
       type: DataTypes.STRING(10),
       allowNull: true,
     },
