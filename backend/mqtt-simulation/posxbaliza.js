@@ -2,7 +2,7 @@ const connectMQTT = require("./Transbordador-simulation/utils/mqttClient.js");
 const Transbordadores = require("../models/Transbordadores.js");
 const Agujas = require("../models/Agujas.js");
 const Balizas = require("../models/Balizas.js");
-const Activo = require("../models/Activo.js");
+const Activos = require("../models/Activos.js");
 const sequelize = require("../config/database.js");
 const { Sequelize } = require("sequelize");
 const { Op } = require("sequelize");
@@ -22,7 +22,7 @@ client.on("message", (topic, message) => {
 });
 
 async function posxBaliza(data) {
-  // Ordenar las valizas por valores
+  // Ordenar las Balizas por valores
   const balizas = data;
   balizas.sort((a, b) => a.max - b.max);
 
@@ -35,18 +35,21 @@ async function posxBaliza(data) {
   console.log("Track: " + track);
   console.log("Baliza más potente: " + vias[0]);
 
+  // logica
+  let misma = "";
   let testVia = "";
+  let posibleVia1 = "";
+  let posibleVia2 = "";
   switch (vias[0]) {
     case "C14":
     case "C13":
       // Viene de E2
-      const misma = mismavia(vias, track);
+      misma = await mismaVia(vias, track);
       if (misma) {
         console.log("La baliza ya está en la misma vía.");
-        ponerVia();
+        testVia = misma;
       } else {
         testVia = await c13c14();
-        await quitarTracker(track);
       }
       break;
 
@@ -56,8 +59,13 @@ async function posxBaliza(data) {
     case "C09":
     case "C08":
       // Viene de E1L
-      testVia = await c8c12();
-      await quitarTracker(track);
+      misma = await mismaVia(vias, track);
+      if (misma) {
+        console.log("La baliza ya está en la misma vía.");
+        testVia = misma;
+      } else {
+        testVia = await c8c12();
+      }
       break;
 
     case "C07":
@@ -69,10 +77,9 @@ async function posxBaliza(data) {
     case "C01":
     case "CO2":
     case "CO3":
-      // Viene de TRA1-TRA3
+      // Viene de TRA1-TRA3 CO2-CO3 E1C-E2C
       try {
         testVia = await transbordador(vias);
-        await quitarTracker(track);
       } catch (error) {
         console.error("Error en la función transbordador:", error.message); // Salir de la función si hay un error
         return;
@@ -80,13 +87,13 @@ async function posxBaliza(data) {
       break;
 
     case "E1C":
-      // Puede venir de E1L o TRA1-TRA3.
+      // Puede venir de E1L o TRA1-TRA3 o C06
       break;
     case "E1L":
       // Puede venir de GPS o C08-C12.
       break;
     case "E2C":
-      // Puede venir de E2L o TRA1-TRA3.
+      // Puede venir de E2L o TRA1-TRA3 o C07
       break;
     case "E2L":
       // Viene de GPS o C13-C14.
@@ -106,11 +113,17 @@ async function posxBaliza(data) {
     default:
       console.log("No se ha detectado baliza valida.");
   }
-  console.log(await buscarTracker(track));
 
-  // Guardar el valor en Baliza
-  const viaGuardar = restoBaliza(vias, balizas, testVia);
-  guardarBaliza(viaGuardar, track);
+  // Guardar el valor en activo
+  const balizaActual = restoBaliza(vias, balizas, testVia);
+  const viaGuardar = await buscarVia(balizaActual);
+  await actualizaActivo(
+    viaGuardar,
+    balizaActual,
+    posibleVia1,
+    posibleVia2,
+    track
+  );
 }
 
 async function transbordador(vias) {
@@ -206,30 +219,12 @@ async function c13c14() {
   }
 }
 
-async function quitarTracker(track) {
-  // Revisar
-  try {
-    const actualizado = await Balizas.update(
-      { tracker: 0 },
-      {
-        where: {
-          //id: { [Op.startsWith]: confirm },
-          tracker: track,
-        },
-      }
-    );
-    return actualizado;
-  } catch (error) {
-    console.error("Error al actualizar la baliza:", error);
-  }
-}
-
 async function balizaVia(balizas) {
   let vias = new Set();
   for (let i = 0; i < balizas.length; i++) {
     const viaBaliza = await Balizas.findOne({
       where: {
-        id: balizas[0].name,
+        id: balizas[i].name,
       },
     });
     vias.add(viaBaliza.dataValues.via1);
@@ -238,48 +233,30 @@ async function balizaVia(balizas) {
   return vias;
 }
 
-function restoBaliza(vias, balizas, testVia) {
-  // Revisar
-  let viaGuardar = "";
-  if (testVia !== vias[0]) {
-    if (vias.has(testVia)) {
-      viaGuardar = balizas.find((element) => element.name.startsWith(testVia));
-    } else {
-      const long = viaGuardar.length;
-      viaGuardar = testVia + balizas[0].name.slice(long, 11);
-    }
-  } else {
-    viaGuardar = balizas[0].name;
-  }
-
-  console.log("Guardar en Baliza: " + viaGuardar);
-  return viaGuardar;
-}
-
-async function mismavia(via, track) {
+async function mismaVia(via, track) {
   try {
-    const viaActual = await Activo.findOne({
+    const viaActual = await Activos.findOne({
       where: {
         via_actual: { [Op.startsWith]: via[0] },
         tracker: track,
       },
     });
     if (!viaActual) {
-      return false;
+      return null;
     }
-    return true;
+    return viaActual.dataValues.via_actual;
   } catch (error) {
-    console.error("Error al actualizar el activo:", error);
+    console.error("Error al buscar el activo:", error);
   }
 }
 
-async function actualizaActivo(via, baliza, posible_via, posible_via2, track) {
-  const result = await Activo.update(
+async function actualizaActivo(via, baliza, posibleVia1, posibleVia2, track) {
+  const result = await Activos.update(
     {
       via_actual: via,
-      balija_actual: via,
-      posible_via: via,
-      posible_via2: via,
+      balija_actual: baliza,
+      posible_via: posibleVia1,
+      posible_via2: posibleVia2,
     },
     {
       where: {
@@ -295,16 +272,16 @@ async function actualizaActivo(via, baliza, posible_via, posible_via2, track) {
     });
 }
 
-async function buscarTrackerActivo(track) {
+async function buscarVia(baliza) {
   try {
-    const activo = await Activo.findOne({
+    const via = await Balizas.findOne({
       where: {
-        tracker: track,
+        id: baliza,
       },
     });
-    console.log("Activo encontrado: " + activo);
-    return activo.dataValues;
+    console.log("Via encontrada: " + activo);
+    return via.dataValues.via1;
   } catch (error) {
-    console.error("Error en busqueda Activo:", error);
+    console.error("Error en busqueda via:", error);
   }
 }
