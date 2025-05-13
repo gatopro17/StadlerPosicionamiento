@@ -4,7 +4,7 @@ const sequelize = require("../config/database");
 const Activos = sequelize.define(
   "Activos",
   {
-    activo_id: {
+    id: {
       type: DataTypes.STRING(20),
       primaryKey: true,
     },
@@ -28,7 +28,7 @@ const Activos = sequelize.define(
       type: DataTypes.STRING(10),
       allowNull: true,
     },
-    trucker: {
+    tracker: {
       type: DataTypes.STRING(10),
       allowNull: true,
     },

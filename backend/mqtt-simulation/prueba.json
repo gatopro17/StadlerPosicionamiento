@@ -1,7 +1,7 @@
 [
-  { "tracker": "TA1", "name": "E2L_01", "max": 20 },
-  { "tracker": "TA1", "name": "E2L_02", "max": 14 },
-  { "tracker": "TA1", "name": "E2L_03", "max": 10 },
-  { "tracker": "TA1", "name": "E2L_04", "max": 15 },
-  { "tracker": "TA1", "name": "E2L_05", "max": 16 }
+  { "tracker": "TA1", "name": "C13_01", "max": 20 },
+  { "tracker": "TA1", "name": "C14_02", "max": 14 },
+  { "tracker": "TA1", "name": "C14_03", "max": 10 },
+  { "tracker": "TA1", "name": "C13_04", "max": 15 },
+  { "tracker": "TA1", "name": "C13_05", "max": 16 }
 ]
